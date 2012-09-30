@@ -1,0 +1,393 @@
+#include "prgl.h"
+//#include "zpr.h"
+
+
+namespace prgl{
+  mesh *glmesh;
+};
+
+#define VIEWING_DISTANCE_MIN  5.0
+
+//static bool g_bLightingEnabled = true;
+//static bool g_bFillPolygons = true;
+//static bool g_bTexture = false;
+static bool g_bButton1Down = false;
+//static GLfloat g_fTeapotAngle = 0.0;
+//static GLfloat g_fTeapotAngle2 = 0.0;
+static GLfloat g_scaling_factor = 0.1;
+static GLfloat g_fViewDistance = 3 * VIEWING_DISTANCE_MIN;
+static GLfloat g_nearPlane = 10;
+static GLfloat g_farPlane = 10000;
+static int g_Width = 600;                          // Initial window width
+static int g_Height = 600;                         // Initial window height
+static int g_yClick = 0;
+//static float g_lightPos[4] = { 10, 10, -100, 1 };  // Position of light
+
+static GLfloat basic_colors[]=
+{
+    0.0, 0.0, 0.0 ,    1.0, 0.0, 0.0 ,     0.0, 1.0, 0.0 ,
+    0.0, 0.0, 1.0 ,    1.0, 1.0, 0.0 ,     0.0, 1.0, 1.0 ,
+    1.0, 0.0, 1.0 ,    1.0, 1.0, 1.0
+};
+
+void SetColor(int i)
+{
+    glColor3fv(basic_colors+((i%8)*3));
+}
+
+
+// void resize(int width, int height)
+// {
+//     const double ar = (double) width / (double) height;
+
+//     glViewport(0, 0, width, height);
+//     glMatrixMode(GL_PROJECTION);
+//     glLoadIdentity();
+//     glFrustum(-ar, ar, -1.0, 1.0, 2.0, 100.0);
+
+//     glMatrixMode(GL_MODELVIEW);
+//     glLoadIdentity() ;
+// }
+
+// void  glMeshRenderer::reshape(GLint width, GLint height)
+// {
+//    g_Width = width;
+//    g_Height = height;
+
+//    glViewport(0, 0, g_Width, g_Height);
+//    glMatrixMode(GL_PROJECTION);
+//    glLoadIdentity();
+//    gluPerspective(65.0, (float)g_Width / g_Height, g_nearPlane, g_farPlane);
+//    glMatrixMode(GL_MODELVIEW);
+// }
+
+
+
+
+void  MeshWindow::CallBackMouseFunc(int button, int state, int x, int y)
+{
+  // Respond to mouse button presses.
+  // If button1 pressed, mark this state so we know in motion function.
+
+  if (button == GLUT_LEFT_BUTTON)
+    {
+      g_bButton1Down = (state == GLUT_DOWN) ? true : false;
+      g_yClick = y - 3 * g_fViewDistance;
+    }
+}
+void MeshWindow::CallBackMotionFunc(int x, int y)
+{
+  // If button1 pressed, zoom in/out if mouse is moved up/down.
+
+  if (g_bButton1Down)
+    {
+      g_fViewDistance = (y - g_yClick) / 3.0;
+      if (g_fViewDistance < VIEWING_DISTANCE_MIN)
+         g_fViewDistance = VIEWING_DISTANCE_MIN;
+      glutPostRedisplay();
+    }
+}
+
+void MeshWindow::draw_node2(node &n, Real rad, int c){
+    glPushMatrix();
+    SetColor(c);
+
+    glTranslatef(n(0),n(1),0);
+
+    glBegin(GL_QUADS);
+
+    glVertex2f(-1*rad, rad);    // A
+    glVertex2f(rad,rad);    // B
+    glVertex2f( rad, -1* rad);    // C
+    glVertex2f( -1*rad,  -1*rad);
+
+    glEnd();
+    glPopMatrix();
+}
+
+
+void MeshWindow::draw_node(node &n, Real rad, int c){
+
+    Real th,x,y;
+    glPushMatrix();
+    SetColor(c);
+
+    glTranslatef(n(0),n(1),0);
+    glBegin(GL_TRIANGLE_FAN);
+
+    for(int j=0; j<=360; j++)
+    {
+        th=M_PI * j / 180.0;
+        x = rad * cos(th);
+        y= rad * sin(th);
+        glVertex2f(x, y);
+    }
+
+    glEnd();
+    glPopMatrix();
+
+}
+
+void MeshWindow::draw_line(line &l, int c)
+{
+    glPushMatrix();
+//    glTranslatef((*l.nodes[1])(0),(*l.nodes[1])(1),0);
+    SetColor(c);
+    glBegin(GL_LINES);
+//    glVertex2f(0.0, 0.0);
+    glVertex2f((*l.nodes[0])(0),(*l.nodes[0])(1));
+    glVertex2f((*l.nodes[1])(0),(*l.nodes[1])(1));
+    glEnd();
+    glPopMatrix();
+
+}
+
+
+void MeshWindow::draw_triangle(triangle &t, int c)
+{
+    glPushMatrix();
+
+    SetColor(c);
+    glBegin(GL_TRIANGLES);
+
+    glVertex2f((*t.nodes[0])(0),(*t.nodes[0])(1));
+    glVertex2f((*t.nodes[1])(0),(*t.nodes[1])(1));
+    glVertex2f((*t.nodes[2])(0),(*t.nodes[2])(1));
+
+
+
+    glEnd();
+    glEnd();
+    glPopMatrix();
+
+}
+
+void MeshWindow::add_mesh(std::list<mesh> &m)
+{
+  std::list<mesh>::iterator mesh_it;
+  for (mesh_it = m.begin(); mesh_it != m.end(); mesh_it++){
+    glmesh.push_back(&(*mesh_it));
+  }
+}
+
+void MeshWindow::draw_mesh()
+{
+  std::list<node>::iterator node_it;
+  std::list<line>::iterator line_it;
+  std::list<line*>::iterator bine_it;
+  std::list<triangle>::iterator tine_it;
+  std::vector<mesh*>::iterator mesh_it;
+
+//  std::cout << "1"; fflush(stdout);
+  unsigned int i=0;
+  for (mesh_it = glmesh.begin(); mesh_it!= glmesh.end(); mesh_it++,i++){
+
+    for (tine_it=(*mesh_it)->triangles.begin(); 
+         tine_it!=(*mesh_it)->triangles.end(); tine_it++){
+      draw_triangle(*tine_it,4+i);
+    }
+
+    // for (node_it=(*mesh_it)->nodes.begin(); node_it!=(*mesh_it)->nodes.end(); node_it++){
+    //   draw_node2(*node_it,0.08,0);
+    // }
+    // for (node_it=(*mesh_it)->centroids.begin(); 
+    //      node_it!=(*mesh_it)->centroids.end(); node_it++){
+    //   draw_node2(*node_it,0.08,0);
+    // }
+    for (line_it=(*mesh_it)->lines.begin(); line_it!=(*mesh_it)->lines.end(); line_it++){
+      draw_line(*line_it,0);
+    }
+
+
+    for (bine_it=(*mesh_it)->hull.begin(); bine_it!=(*mesh_it)->hull.end(); bine_it++){
+      draw_line(*(*bine_it),1);
+    }
+
+  }
+
+}
+
+
+
+void MeshWindow::CallBackDisplayFunc()
+{
+/* clear window */
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glMatrixMode (GL_PROJECTION);
+  glLoadIdentity();
+
+  SetColor(0);
+  
+//  glOrtho(0, 400,  600, 0,  -1.0, -1.0);
+  glScaled(g_scaling_factor/g_fViewDistance,
+           g_scaling_factor/g_fViewDistance,
+           g_scaling_factor/g_fViewDistance);
+//  std::cout << g_fViewDistance << std::endl;
+//  glLoadIdentity();
+
+//  gluLookAt(0, 0, -g_fViewDistance/10000000, 0, 0, -1, 0, 1, 0);
+//  gluLookAt(0, 0, -9, 0, 0, -1, 0, 1, 0);
+
+  draw_mesh();
+
+
+/* draw unit square polygon */
+/*
+  glBegin(GL_POLYGON);
+  glVertex2f(-0.5, -0.5);
+  glVertex2f(-0.5, 0.5);
+  glVertex2f(0.5, 0.5);
+  glVertex2f(0.5, -0.5);
+  glEnd();
+*/
+
+/* flush GL buffers */
+   glutSwapBuffers();
+
+//  glFlush();
+}
+// void  glMeshRenderer::idle(void)
+// {
+ 
+//     //timex = glutGet(GLUT_ELAPSED_TIME) ;
+
+  
+// //  frame++;
+// //  time2=glutGet(GLUT_ELAPSED_TIME);
+// //  std::cout << "ASDASDASD";
+// //  if (time2 - timebase > 15) {
+//     glutPostRedisplay();
+//     //fps = frame*1000.0/(time2-timebase);
+// //    timebase = time2;
+// //    frame = 0;
+// //  }
+  
+// //    Sleep(10);
+// }
+
+void  MeshWindow::init()
+{
+//  glutInit(&argc,argv);
+//  glutInit(1,(char const*[]){"trolol"});
+//  glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB);
+//  glutInitWindowSize(700,700);
+
+  
+
+//  glutInitWindowPosition(0,0);
+//  glutCreateWindow("pr1");
+//  glutDisplayFunc(display);
+//  glutMouseFunc (MouseButton);
+//  glutKeyboardFunc(keyboard);
+
+
+//  glutMotionFunc (MouseMotion);
+
+
+/* set clear color to black */
+  glClearColor (1, 1, 1, 1);
+
+/* set fill color to white */
+  glColor3f(0,0,0);
+
+/* set up standard orthogonal view with clipping */
+/* box as cube of side 2 centered at origin */
+/* This is default view and these statement could be removed */
+  glMatrixMode (GL_PROJECTION);
+  glLoadIdentity ();
+
+//  glmesh->generate1(500,1,0.4);
+//  glOrtho(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0);
+}
+
+/*
+  int main(int argc, char** argv)
+  {
+
+  glutInit(&argc,argv);
+  glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB);
+  glutInitWindowSize(500,500);
+  glutInitWindowPosition(0,0);
+  glutCreateWindow("simple");
+  glutDisplayFunc(display);
+  init();
+  glutMainLoop();
+  }
+*/
+
+
+void MeshWindow::CallBackKeyboardFunc(unsigned char key, int x, int y)
+{
+
+    //usercontrol(key, &bodyarray[0]);
+
+    switch(key)
+    {
+
+    case 'g':
+//      glmesh->generate1();
+      glutPostRedisplay();
+      break;
+
+    case 's':
+//      glmesh->out_vtk1();
+      break;
+
+    case '+':
+      g_scaling_factor*=2;
+      glutPostRedisplay();
+      break;
+    case '-':
+      g_scaling_factor*=0.5;
+      glutPostRedisplay();
+      break;
+    case 'n':
+      std::cout << std::endl << "Enter the number of nodes to  be generated:"<<
+        std::endl<< ">>> ";
+//      std::cin >> glmesh->nnodes;
+//      std::cout << std::endl;
+//      glmesh->generate1();
+      glutPostRedisplay();
+      break;
+
+    default:
+
+      break;
+    }
+}
+
+MeshWindow::MeshWindow(GlutMaster * glutMaster,
+                       int setWidth, int setHeight,
+                       int setInitPositionX, int setInitPositionY,
+                       char * title){
+
+   width  = setWidth;               
+   height = setHeight;
+
+   initPositionX = setInitPositionX;
+   initPositionY = setInitPositionY;
+
+   glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
+   glutInitWindowSize(width, height);
+   glutInitWindowPosition(initPositionX, initPositionY);
+   glViewport(0, 0, width, height);   // This may have to be moved to after the next line on some platforms
+
+   glutMaster->CallGlutCreateWindow(title, this);
+
+//   glEnable(GL_DEPTH_TEST);
+
+//   glMatrixMode(GL_PROJECTION);
+//   glOrtho(-80.0, 80.0, -80.0, 80.0, -500.0, 500.0);
+
+//   glMatrixMode(GL_MODELVIEW);
+//   glLoadIdentity();
+
+//   glRotatef(60, 1, 1, 1);
+//   glColor4f(1.0, 0.0, 0.0, 1.0);
+}
+
+MeshWindow::~MeshWindow(){
+
+   glutDestroyWindow(windowID);
+}
+
