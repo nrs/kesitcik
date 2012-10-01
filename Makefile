@@ -1,8 +1,6 @@
 # The location of the mesh library
 
 
-
-
 ###############################################################################
 # File management.  This is where the source, header, and object files are
 # defined
@@ -61,12 +59,19 @@ $(target): $(objects) $(includefiles)
 	$(CC)  $(INCLUDES) $(CXXFLAGS) -c $< -o $@
 # Useful rules.
 clean:
-	@rm -f $(objects) *~ .depend
+	@rm -f $(objects) ./src/*~ *~ .depend
+
+
+clobber:
+	@$(MAKE) clean
+	@rm -f $(target) out.gmv
 	rm *.vtk
 
 distclean:
 	@$(MAKE) clobber
 	@rm -f *.o *.g.o *.pg.o .depend
+
+
 
 run: $(target)
 	@echo "***************************************************************"
