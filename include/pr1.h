@@ -13,7 +13,6 @@
 #include <memory>
 #include <stdio.h>
 #include <time.h>
-//#include <random>
 #include "point.h"
 #include "constitutive.h"
 
@@ -148,9 +147,10 @@ public:
 //  std::auto_ptr<constitutive::material> mat;
 //  std::auto_ptr<int> mat;
   constitutive::material *mat;
-  std::list<node> holes;
 
-  node innode;
+
+  list<node> holes;
+  list<node> innode;
 
   void generate1(unsigned int n, Real a, Real p);
   void generate1();

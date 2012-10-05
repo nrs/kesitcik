@@ -44,6 +44,8 @@ namespace constitutive{
 //    par[2]=(Real) eps_cu;
     par[2] = (Real) -1*fabs(eps_cu1); // compression ultimate
     par[3] = (Real)    fabs(eps_cu2); // tension ultimate
+    epsult[0] = par[2];
+    epsult[1] = par[3];
     description="Concrete 1";
   }
 
@@ -84,6 +86,8 @@ namespace constitutive{
 //    par[2]=(Real) eps_cu;
     par[2] = (Real) -1*fabs(eps_cu1); // compression ultimate
     par[3] = (Real)    fabs(eps_cu2); // tension ultimate
+    epsult[0] = par[2];
+    epsult[1] = par[3];
     description = "Steel 1";
   }
 

@@ -15,6 +15,7 @@ namespace constitutive{
   public:
     virtual Real sig(Real eps)=0;
     std::vector<Real> par;
+    Real epsult[2];
     std::string description;
 //    std::vector<Real> eps_ult;
     void print(std::ostream& os = std::cout) const;

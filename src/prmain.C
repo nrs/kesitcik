@@ -2,6 +2,7 @@
 
 #include "pr1.h"
 #include "prgl.h"
+#include "section.h"
 #include "glutMaster.h"
 #include "glutWindow.h"
 #include <fstream>
@@ -10,7 +11,7 @@ MeshWindow  * firstWindow = 0;
 
 using namespace std;
 
-void single_rein(supermesh &s, Real width, Real height, unsigned int count, Real rad, Real dprime);
+
 void lolfun( supermesh &s, Real aa, Real bb, char *lolchar );
 vector<Real> lol2(mesh &m, Real a, Real b);
 Real normal_force( supermesh &s, Real a, Real b, Real slope);
@@ -40,14 +41,15 @@ int main(int argc, char** argv) {
   m1.triangulate_mesh(0.1);
 */
   supermesh s;
-  single_rein(s,300,500,5,8,80);
+  double_rein_rect(s,300,500,5,8,80,80);
+  // single_rein_rect(s,300,500,5,8,80);
 
   char cucu[1024];
   Real slope=-1e-6;
   Real bb=0;
 
 #if 0
-  for (unsigned int i=0 ; i<50; i++, aa+= -1e-7){
+  for (unsigned int i=0 ; i<50; i++, slope+= -1e-7){
     sprintf(cucu, "a%03d.vtk",i);
     lolfun(s,slope,250,cucu);
 
@@ -65,6 +67,7 @@ int main(int argc, char** argv) {
 //    moment(s,0,bb,slope);
   }
 #endif
+
   unsigned int niter = 0;
   Real x[3] = {0.000,-0.00001,-0.00005}; Real fx[2],pivot = 3.5e-5;
   while (true){
@@ -75,7 +78,7 @@ int main(int argc, char** argv) {
     fx[1]  = normal_force(s,pivot, 250, x[1]);
     x[2] = x[1] - fx[1] * (x[1] - x[0])/ (fx[1]-fx[0]);
 
-    if (fabs(fx[1] - 0) < 1e-4 || niter > 1000) break;
+    if (fabs(fx[1] - 0) < 1e-4 || niter > 10) break;
   }
 
 
@@ -89,62 +92,6 @@ int main(int argc, char** argv) {
 }
 
 
-void single_rein(supermesh &s, Real width, Real height, unsigned int count, Real rad, Real dprime){
-  int nsides=12;
-//  std::list<mesh> m(1);
-  s.meshes.push_back(mesh());
-
-  std::list<mesh> rein(count);
-  std::list<mesh>::iterator mesh_it ;
-  unsigned int i;
-  Real center[2];
-  rectangular_section(s.meshes.front(),-1*width/2,width/2,height,0);
-
-  i=0;
-  for (mesh_it = rein.begin(); mesh_it != rein.end(); mesh_it++,i++){
-    center[0]=-1*width/2 + (i+1)*width/(count+1) ;
-    center[1]=dprime;
-    circular_section(*mesh_it,rad,center,nsides);
-
-  }
-
-
-  // for (unsigned int i=0; i<count; i++){
-  //   center[0]=-1*width/2 + (i+1)*width/(count+1) ;
-  //   center[1]=dprime;
-  //   circular_section(rein[i],rad,center,nsides);
-  // }
-//  Real center[] = {80,80}; circular_section(m2,8,center,12);
-  for (mesh_it = rein.begin(); mesh_it != rein.end(); mesh_it++){
-    s.meshes.front().subtract(*mesh_it);
-  }
-
-  s.meshes.front().triangulate_mesh(500);//50
-
-//  std::list<node>::iterator node_it;
-  // for (node_it=m[0].holes.begin(); node_it != m[0].holes.end(); node_it++){
-  //   std::cout << *node_it;
-  //   std::cout<<std::endl;
-  // }
-
-  s.meshes.push_back(mesh());
-  for (mesh_it = rein.begin(); mesh_it != rein.end(); mesh_it++){
-    s.meshes.back().add(*mesh_it);
-  }
-  s.meshes.back().triangulate_mesh(50);//5
-
-  s.meshes.front().mat = new constitutive::concrete1;
-  s.meshes.back().mat = new constitutive::steel1;
-  s.meshes.front().print_info(); 
-  cout<<endl;
-  s.meshes.back().print_info();
-
-// A dummy mesh to keep drawings etc.
-  s.meshes.front().color_mesh(0,0,4);
-  s.meshes.back().color_mesh(0,0,1);
-
-
-}
 
 
 

@@ -323,7 +323,7 @@ void circular_section(mesh &m, Real rad, Real cen[2], int nsides){
   m.clear();
   std::list<node>::iterator node_it;
   std::list<line>::iterator line_it;
-  m.innode = node(cen[0],cen[1]);
+  m.innode.push_back( node(cen[0],cen[1]) );
 
 //  for (unsigned int i=0; i< 4; i++) m.nodes.push_back(node());
   unsigned int i = 0;
@@ -677,7 +677,8 @@ void mesh::subtract(mesh &m){
   unsigned int lastindex=nodes.size();
 //  node_it = nodes.end(); node_it--;
 //  std::cout << *node_it;
-  holes.push_back(m.innode);
+  holes.insert(holes.begin(),m.innode.begin(), m.innode.end());
+
   nodes.insert(nodes.end(),m.nodes.begin(),m.nodes.end());
 
   std::vector<node*> node_ptrs;
@@ -701,6 +702,7 @@ void mesh::add(mesh &m){
   unsigned int lastindex=nodes.size();
 
   nodes.insert(nodes.end(),m.nodes.begin(),m.nodes.end());
+  innode.insert(innode.begin(),m.innode.begin(), m.innode.end());
 
   std::vector<node*> node_ptrs;
   for (node_it = nodes.begin(); node_it!=nodes.end(); node_it++)
