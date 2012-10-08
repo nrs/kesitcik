@@ -17,9 +17,9 @@ namespace constitutive{
 
 
   Real concrete1::sig(Real eps){
-//    if (eps > par[2]) throw 0;
-    if (eps < par[2] || eps > par[3]) 
+    if (eps < epsult[0]-TOLERANCE || eps > epsult[1]+TOLERANCE){
       return 0.;
+    }
     Real result;
     if (eps < 0){
       result = -1*par[0] * ((2*-1*eps/par[1]) - (eps/par[1])*(eps/par[1])) ;
@@ -34,7 +34,6 @@ namespace constitutive{
 
   concrete1::concrete1(){
     init(20,2e-3,-3.5e-3, 1e-3);
-//    concrete1(20,2e-3,3.5e-3);
   }
 
   void concrete1::init(Real f_ck, Real eps_0, Real eps_cu1, Real eps_cu2){
@@ -57,7 +56,7 @@ namespace constitutive{
 
   Real steel1::sig(Real eps){
 //    if (eps > par[2]) throw 0;
-    if (eps < par[2] || eps > par[3]) 
+    if (eps < epsult[0]-TOLERANCE || eps > epsult[1]+TOLERANCE)
       return 0.;
     Real result;
     if (eps < 0){
@@ -75,8 +74,9 @@ namespace constitutive{
   }
 
   steel1::steel1(){
-    init(200000,0.0025,-3.5e-3, 0.01875);
-//    steel1(20,2e-3,3.5e-3);
+//    init(200000,0.0025,-3.6e-3, 1.1e-3);
+    init(200000,0.0025,-0.01875, 0.01875);
+
   }
 
   void steel1::init(Real f_ck, Real eps_0, Real eps_cu1, Real eps_cu2){

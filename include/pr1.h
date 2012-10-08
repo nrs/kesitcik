@@ -11,11 +11,12 @@
 #include <utility>
 #include <iterator>
 #include <memory>
+#include <limits>
 #include <stdio.h>
 #include <time.h>
 #include "point.h"
 #include "constitutive.h"
-
+#include <cmath>
 #define VOLUME_TOLERANCE 1e-4
 
 class node;
@@ -34,10 +35,36 @@ Real calculate_triangle_area_2d(Real a[2], Real b[2], Real c[2]);
 namespace numtk{
   std::vector<Real> range(Real st, Real en, unsigned int a);
 
-  void output_gp(std::vector<Real> &a, std::vector<Real> &b, char *filename);
+  void output_gp(std::vector<Real> &a, std::vector<Real> &b, string filename);
+  void output_gp(std::vector<Real> &a, 
+                 std::vector<Real> &b, std::vector<Real> &c, string filename);
 
   Real distance(node a, Real m, Real n);
 
+  template<typename T> inline bool isnan(T value)
+  {
+    value=fabs(value);
+    return value != value;
+  }
+
+// requires #include <limits>
+  template<typename T> inline bool isinf(T value)
+  {
+    return std::numeric_limits<T>::has_infinity &&
+      fabs(value) == std::numeric_limits<T>::infinity();
+  }
+
+  template<typename T> inline bool iszero(T value)
+  {
+    return (fabs(value) < TOLERANCE);
+  }
+
+  template <typename T> inline int sign(T val) {
+    return (T(0) < val) - (val < T(0));
+  }
+  template <typename T> inline bool isposit(T val) {
+    return val >= 0;
+  }
 }
 
 inline Real random_Real(){

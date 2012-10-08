@@ -12,22 +12,13 @@ MeshWindow  * firstWindow = 0;
 using namespace std;
 
 
-void lolfun( supermesh &s, Real aa, Real bb, char *lolchar );
+void lolfun( supermesh &s, Real aa, Real bb, Real slope, char *lolchar );
 vector<Real> lol2(mesh &m, Real a, Real b);
-Real normal_force( supermesh &s, Real a, Real b, Real slope);
-void normal_and_moment( supermesh &s, Real F, Real M, Real a, Real b, Real slope);
-Real moment( supermesh &s, Real a, Real b, Real slope);
 
-vector<Real> project2nodes( mesh &m, std::vector<Real> &vec);
 
 int main(int argc, char** argv) {
   
-  glutMaster   = new GlutMaster();    
-  
-  firstWindow  = new MeshWindow(glutMaster,
-                                700, 700,    // height, width
-                                0, 0,    // initPosition (x,y)
-                                "Poot"); // title
+
 
 /*  
   mesh m1,m2;
@@ -41,13 +32,15 @@ int main(int argc, char** argv) {
   m1.triangulate_mesh(0.1);
 */
   supermesh s;
-  double_rein_rect(s,300,500,5,8,80,80);
-  // single_rein_rect(s,300,500,5,8,80);
+//  double_rein_rect(s,300,500,5,8,80,80);
+  single_rein_rect(s,300,500,5,8,80);
 
   char cucu[1024];
   Real slope=-1e-6;
   Real bb=0;
+//  lolfun(s,-0.00350,497.363, -5.39057e-05 ,"lol.vtk");
 
+  interaction(s);
 #if 0
   for (unsigned int i=0 ; i<50; i++, slope+= -1e-7){
     sprintf(cucu, "a%03d.vtk",i);
@@ -67,7 +60,7 @@ int main(int argc, char** argv) {
 //    moment(s,0,bb,slope);
   }
 #endif
-
+#if 0
   unsigned int niter = 0;
   Real x[3] = {0.000,-0.00001,-0.00005}; Real fx[2],pivot = 3.5e-5;
   while (true){
@@ -80,8 +73,15 @@ int main(int argc, char** argv) {
 
     if (fabs(fx[1] - 0) < 1e-4 || niter > 10) break;
   }
+#endif
+  return 0;
 
-
+  glutMaster   = new GlutMaster();    
+  
+  firstWindow  = new MeshWindow(glutMaster,
+                                700, 700,    // height, width
+                                0, 0,    // initPosition (x,y)
+                                "Poot"); // title
   firstWindow->glsupermesh = &s;
 
   firstWindow->init();
@@ -95,65 +95,9 @@ int main(int argc, char** argv) {
 
 
 
-Real normal_force( supermesh &s, Real a, Real b, Real slope){
-  list<mesh>::iterator mesh_it;
-  list<triangle>::iterator tri_it;
-  Real F = 0;
-  for (mesh_it = s.meshes.begin(); mesh_it != s.meshes.end(); mesh_it++){
-    Real eps, sig;
-    for (tri_it = mesh_it->triangles.begin(); 
-         tri_it!=mesh_it->triangles.end(); tri_it++){
-      eps = slope * ( (*(*tri_it).cent)(1) - b) + a ;
-      sig = mesh_it->mat->sig(eps) ;
-      F+=tri_it->area*sig;
-    }
-  }
-  printf(" a= %.2e   b= %.2e   s= %.2e   F= %.2e\n",a,b,slope,F);
-  return F;
-}
 
 
-void normal_and_moment( supermesh &s, Real F, Real M, Real a, Real b, Real slope){
-  list<mesh>::iterator mesh_it;
-  list<triangle>::iterator tri_it;
-  F = 0, M = 0;
-  for (mesh_it = s.meshes.begin(); mesh_it != s.meshes.end(); mesh_it++){
-    Real eps, sigma, y, dist;
-    for (tri_it = mesh_it->triangles.begin(); 
-         tri_it!=mesh_it->triangles.end(); tri_it++){
-      y = (*(*tri_it).cent)(1);
-      eps = slope * (y - b) + a ;
-      sigma = mesh_it->mat->sig(eps) ;
-      dist = y - b;
-      F += tri_it->area * sigma;
-      M += tri_it->area * sigma * dist;
-    }
-  }
-  printf("a= %.2e   b= %.2e   s= %.2e   F= %.2e   M= %.2e\n",a,b,slope,F,M);
-}
-
-
-Real moment( supermesh &s, Real a, Real b, Real slope){
-  list<mesh>::iterator mesh_it;
-  list<triangle>::iterator tri_it;
-  Real M = 0;
-  for (mesh_it = s.meshes.begin(); mesh_it != s.meshes.end(); mesh_it++){
-    Real eps, sigma, y, dist;
-    for (tri_it = mesh_it->triangles.begin(); 
-         tri_it!=mesh_it->triangles.end(); tri_it++){
-      y = (*(*tri_it).cent)(1);
-      eps = slope * (y - b) + a ;
-      sigma = mesh_it->mat->sig(eps) ;
-      dist = y - b;
-      M += tri_it->area * sigma * dist;
-    }
-  }
-  printf("a= %.2e   b= %.2e   s= %.2e   M= %.2e\n",a,b,slope,M);
-  return M;
-}
-
-
-void lolfun( supermesh &s, Real aa, Real bb, char *lolchar ){
+void lolfun( supermesh &s, Real aa, Real bb, Real slope, char *lolchar ){
 
   list<mesh>::iterator mesh_it;
   std::list<node>::iterator node_it;
@@ -190,7 +134,7 @@ void lolfun( supermesh &s, Real aa, Real bb, char *lolchar ){
     for (tri_it = mesh_it->triangles.begin(); 
          tri_it!=mesh_it->triangles.end(); tri_it++){
 
-      epsv.push_back(  aa* ( (*(*tri_it).cent)(1) - bb) );
+      epsv.push_back(  slope* ( (*(*tri_it).cent)(1) - bb) +aa);
 //      dum2 = m.mat->sig( a* ( (*(*tri_it).cent)(1) - b) );
 //    dum = 0.001;
 //    cout << m.mat->description << endl;
@@ -224,7 +168,7 @@ void lolfun( supermesh &s, Real aa, Real bb, char *lolchar ){
   
   set_color(s.misclines,3);
 
-//  out_vtk1(s.meshes,luli, lolchar);
+  out_vtk1(s.meshes,luli, lolchar);
 
 
   // for (mesh_it = s.meshes.begin(); mesh_it != s.meshes.end(); mesh_it++){
@@ -243,10 +187,6 @@ void lolfun( supermesh &s, Real aa, Real bb, char *lolchar ){
 // //      cout<< *it << endl;
 //     }
 //   }
-
-
-
-
 
 
 }
@@ -273,34 +213,3 @@ std::vector<Real> lol2(mesh &m, Real a, Real b){
 }
 
 
-std::vector<Real> project2nodes( mesh &m, std::vector<Real> &vec){
-  m.init_node2tri();
-  m.numbernodes();
-  std::vector<Real> result;
-  std::list<node>::iterator node_it;
-  std::set<triangle*>::iterator tri_it;
-  if (vec.size() != m.centroids.size()) {
-    std::cerr << "Projection on nodes unsuccessful." << std::endl;
-    return result;
-  }
-//  cout<< vec.back()<<endl;
-
-  Real dum;
-  for (node_it = m.nodes.begin(); node_it!=m.nodes.end(); node_it++){
-    dum=0;
-    for (tri_it = m.node2tri[&(*node_it)].begin(); 
-         tri_it != m.node2tri[&(*node_it)].end();
-         tri_it++){
-      dum+=vec[(*tri_it)->id];
-//      cout << vec[(*tri_it)->id] <<endl;
-    }
-    if (m.node2tri[&(*node_it)].size() != 0){
-      dum /= (Real) m.node2tri[&(*node_it)].size();
-    }
-//    dum+=node2tri[&(*node_it)];
-    result.push_back(dum);
-//    cout<< result.back() << endl;
-  }
-  return result;
-
-}

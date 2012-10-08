@@ -16,10 +16,20 @@ namespace numtk{
     result.push_back(en);
     return result;
   }
-  void output_gp(std::vector<Real> &a, std::vector<Real> &b, char *filename){
+
+  void output_gp(std::vector<Real> &a, 
+                 std::vector<Real> &b, std::vector<Real> &c, string filename){
     cout << "Writing " << filename << "." << endl;
     std::ofstream afile;
-    afile.open(filename);
+    afile.open(filename.c_str());
+    for (unsigned int i=0; i<a.size();i++)
+      afile << a[i] << " " << b[i] << " " << c[i] <<std::endl;
+    afile.close();
+  }
+  void output_gp(std::vector<Real> &a, std::vector<Real> &b, string filename){
+    cout << "Writing " << filename << "." << endl;
+    std::ofstream afile;
+    afile.open(filename.c_str());
     for (unsigned int i=0; i<a.size();i++)
       afile << a[i] << " " << b[i] << std::endl;
     afile.close();
@@ -27,6 +37,7 @@ namespace numtk{
   Real distance(node a, Real m, Real n){
     return (Real) fabs(-1*m*a(0)+a(1)-n)/sqrt(m*m+1);
   }
+
 }
 
 unsigned int random_range(unsigned int min, unsigned int max) //range : [min, max)
