@@ -1,4 +1,5 @@
 #include "section.h"
+#include "interval.h"
 
 void single_rein_rect(supermesh &s, Real width, Real height, 
                  unsigned int nrein, Real rad, Real dprime)
@@ -186,193 +187,9 @@ Real moment( supermesh &s, Real a, Real b, Real slope){
   return M;
 }
 
-void interaction1(supermesh &s){
-
-}
 
 
-void interaction2(supermesh &s){
-//  Real ex[2], ep[4];
-  // if (s.meshes.size()!=2){
-  //   cerr<< "Do not use this function for # mesh != 2" << endl;
-  //   return;
-  // }
 
-
-}
-
-struct interval{
-  Real s,e;
-};
-
-bool interval_sorter(interval const& lhs, interval const& rhs) {
-  return lhs.s < rhs.s;
-}
-
-
-void union_interval(vector<interval> &v)
-{
-  if (v.size()==0) return;
-  sort(v.begin(), v.end(), interval_sorter);
-  
-  vector<interval> r;
-  r.push_back(v[0]);
-  for (unsigned int i = 0; i < v.size(); i++){
-
-    if (r.back().e < v[i].s)
-      r.push_back(v[i]);
-    else if (r.back().e == v[i].s)
-      r.back().e = v[i].e;
-    if (r.back().e < v[i].e)
-      r.back().e = v[i].e;
-  // if y[-1].end < x.start:
-  //     y.append(x)
-  // elif y[-1].end == x.start:
-  //     y[-1].end = x.end
-  }
-  v=r;
-
-}
-
-void add_interval(Real a, Real b, vector<interval> &v)
-{
-  if (numtk::iszero(a-b)) return;
-
-  interval c;
-  c.s = min(a,b);
-  c.e = max(a,b);
-  if (v.size()==0){
-    v.push_back(c); return;
-  }
-  v.push_back(c);
-  union_interval(v);
-  // cout << c.s << " " << c.e << endl;
-  // for (unsigned int j = 0; j < v.size(); j++)
-  //   cout << "(" << v[j].s << "," <<  v[j].e << "), ";
-  // cout << endl<<endl;
-  
-}
-
-void subtract_interval(Real a, Real b, vector<interval> &v)
-{
-  if (numtk::iszero(a-b)) return;
-  interval c,d;
-  c.s = min(a,b);
-  c.e = max(a,b);
-
-  sort(v.begin(), v.end(), interval_sorter);
-
-  
-  vector<interval> r;
-  for (unsigned int i = 0; i < v.size(); i++){
-    if (c.e <= v[i].s){
-      r.push_back(v[i]);
-    }else if (c.s <= v[i].s && c.e >= v[i].s && c.e <= v[i].e){
-      d.s = c.e; d.e = v[i].e; r.push_back(d);
-    } else if (c.s <= v[i].s && c.e >= v[i].e){
-      continue;
-    } else if (c.s >= v[i].s && c.e <= v[i].e){
-      d.s=v[i].s; d.e=c.s; r.push_back(d);
-      d.s=c.e; d.e=v[i].e; r.push_back(d);
-    } else if (c.s >= v[i].s && c.s <= v[i].e && c.e >= v[i].e){
-      d.s = v[i].s; d.e = c.s; r.push_back(d);
-    } else if (c.s >= v[i].e){
-      r.push_back(v[i]);
-    }
-  }
-  v.clear();
-  for (unsigned int i = 0; i < r.size(); i++)
-    if (r[i].s!=r[i].e && ~numtk::iszero(r[i].s - r[i].e))
-        v.push_back(r[i]);
-
-
-  // cout << c.s << " " << c.e << endl;
-  // for (unsigned int j = 0; j < v.size(); j++)
-  //   cout << "(" << v[j].s << "," <<  v[j].e << "), ";
-  // cout << endl<<endl;
-
-// The algorithm in python
-
-// for x in s[:]:
-//     if z.end < x.start:
-//         break
-//     elif z.start < x.start and z.end > x.start and z.end < x.end:
-//         x.start=z.end
-//     elif z.start < x.start and z.end > x.end:
-//         s.remove(x)
-//     elif z.start > x.start and z.end < x.end:
-//         s.append(tp(x.start,z.start))
-//         s.append(tp(z.end,x.end))
-//         s.remove(x)
-//     elif z.start > x.start and z.start < x.end and z.end > x.end:
-//         x.end=z.start
-//     elif z.start > x.end:
-//         continue
-}
-
-vector<interval> intersection_interval(vector<interval> a, vector<interval> b)
-{
-  union_interval(a); union_interval(b);
-  vector<interval> r;
-  interval d;
-  for (unsigned int i = 0; i < a.size(); i++){
-    for (unsigned int j = 0; j < b.size(); j++){
-      if (a[i].e < b[i].s || a[i].s > b[i].e){
-        continue;
-      }else if ( a[i].s <= b[i].s && a[i].e >= b[i].s && a[i].e <= b[i].e){
-        d.s = b[i].s; d.e = a[i].e; r.push_back(d);
-      }else if ( a[i].s <= b[i].s && a[i].e >= b[i].e ){
-        r.push_back(b[i]);
-      }else if ( a[i].s >= b[i].s && a[i].e <= b[i].e ){
-        r.push_back(a[i]);
-      }else if ( a[i].s >= b[i].s && a[i].s <= b[i].e && a[i].e >= b[i].e){
-        d.s = a[i].s; d.e = b[i].e; r.push_back(d);
-      }
-    }
-  }
-  vector<interval> s;
-  for (unsigned int i = 0; i < r.size(); i++)
-    if (r[i].s!=r[i].e && ~numtk::iszero(r[i].s - r[i].e))
-        s.push_back(r[i]);
-
-  return s;
-
-}
-void subtract_infinity(Real a, bool side, vector<interval> &v)
-{
-  interval d;
-
-  // side == 1 for positive, == 0 for negative
-  
-  vector<interval> r;
-  if (side == true){
-    for (unsigned int i = 0; i < v.size(); i++){
-      if (a <= v[i].s && a <= v[i].e){
-        continue;
-      }else if (a >= v[i].s && a <= v[i].e){
-        d.s = v[i].s; d.e = a; r.push_back(d);
-      } else if (a >= v[i].s && a >= v[i].e){
-        r.push_back(v[i]);
-      }
-    }
-  }else {
-    for (unsigned int i = 0; i < v.size(); i++){
-      if (a <= v[i].s && a <= v[i].e){
-        r.push_back(v[i]);
-      }else if (a >= v[i].s && a <= v[i].e){
-        d.s = a; d.e = v[i].e; r.push_back(d);
-      } else if (a >= v[i].s && a >= v[i].e){
-        continue;
-      }
-    }
-  }
-  v.clear();
-  for (unsigned int i = 0; i < r.size(); i++)
-    if (r[i].s!=r[i].e && ~numtk::iszero(r[i].s - r[i].e))
-        v.push_back(r[i]);
-
-
-}
 
 namespace numtk{
   inline Real slope(const Point &a, const Point &b){
@@ -402,11 +219,12 @@ void interaction(supermesh &s)
   //pivot points
   vector<Point> pivots;
   // allowable and unallowable intervals
+  // represented by a line  between two points
   vector<vector<vector<Point> > > allow;
   vector<vector<vector<Point> > > unall;
 
   // pivot compound intervals:
-  vector<vector<interval> > pivint;
+  vector<compoundInterval> pivint;
   // the intervals must be either all negative or all positive.
   // pivsign holds that information
   vector<bool> pivsign;
@@ -472,14 +290,22 @@ void interaction(supermesh &s)
     
   }
 
+  compoundInterval lol;
+  lol._intervals.push_back(interval(0,5));
+  lol  += interval(4,6);
+  cout << "ASDASDASD " << lol << endl;
+
+
+
 
   for (unsigned int i = 0; i < pivots.size(); i++){
     Real upper,lower;
-    pivint.push_back(vector<interval>());
+    pivint.push_back(compoundInterval());
+    
+    vector<compoundInterval> suballowable;
 
-    vector<vector<interval> > suballowable;
     for (unsigned int j = 0; j < allow.size(); j++){
-      suballowable.push_back(vector<interval>());
+      suballowable.push_back(compoundInterval());
 
       for (unsigned int k = 0; k < allow[j].size(); k++){
         upper = numtk::slope(pivots[i], allow[j][k][0]);
@@ -490,15 +316,16 @@ void interaction(supermesh &s)
             numtk::isnan(lower) || numtk::isinf(lower))
           continue;
 //        cout << "s " << suballowable[j].size() << endl;
-        add_interval(upper,lower, suballowable[j]);
+        suballowable[j]+=interval(upper,lower);
 //        cout << "e " << suballowable[j].size() << endl<<endl;
       }
     }
     
     if (suballowable.size() != 0){
-      vector<interval> lol = suballowable[0];
+     compoundInterval lol = suballowable[0];
+//      vector<interval> lol = suballowable[0];
       for (unsigned int j = 0; j < suballowable.size(); j++){
-        lol = intersection_interval(lol,suballowable[j]);
+        lol = lol.intersection(suballowable[j]);
 //        cout << "ASDASD " << suballowable[j].size() << endl;
       }
       pivint[i]=lol;
@@ -521,21 +348,21 @@ void interaction(supermesh &s)
         if (numtk::isinf(lower)){
           bool dumb = numtk::isposit(unall[j][k][1](0)-pivots[i](0)) *
             !numtk::isposit(upper);
-          subtract_infinity(upper, !dumb,pivint[i]);
+          pivint[i].subtract_infinity(upper,!dumb);
           continue;
         }
         if (numtk::isinf(upper)){
           bool dumb = numtk::isposit(unall[j][k][0](0)-pivots[i](0))*
             !numtk::isposit(lower);
-          subtract_infinity(lower, !dumb,pivint[i]);
+          pivint[i].subtract_infinity(lower,!dumb);
           continue;
         }
         if (numtk::isnan(lower)){
-          subtract_infinity(0, !pivsign[i],pivint[i]);
+          pivint[i].subtract_infinity(0,!pivsign[i]);
           continue;
         }
         if (numtk::isnan(upper)){
-          subtract_infinity(0, !pivsign[i],pivint[i]);
+          pivint[i].subtract_infinity(0,!pivsign[i]);
           continue;
         }
         
@@ -545,13 +372,14 @@ void interaction(supermesh &s)
         //   subtract_infinity(lower, !dumb,pivint[i]);
         //   continue;
         // }
-        subtract_interval(upper,lower, pivint[i]);
+        pivint[i]-=interval(upper,lower);
       }
     }
 #endif
     cout << endl;
 
   }
+
 
 //  cout << allow.size() << " " << unall.size() << endl;
 //   interval dd; 
@@ -696,6 +524,176 @@ void plot_y_vs_sig( supermesh &s, Real a, Real b, Real slope, string lolchar ){
 // // Color
 //   s.meshes.front().color_mesh(0,0,4);
 //   s.meshes.back().color_mesh(0,0,1);
+
+
+// }
+
+
+
+
+
+// void union_interval(vector<interval> &v)
+// {
+//   if (v.size()==0) return;
+//   sort(v.begin(), v.end(), interval_sorter);
+  
+//   vector<interval> r;
+//   r.push_back(v[0]);
+//   for (unsigned int i = 0; i < v.size(); i++){
+
+//     if (r.back().e < v[i].s)
+//       r.push_back(v[i]);
+//     else if (r.back().e == v[i].s)
+//       r.back().e = v[i].e;
+//     if (r.back().e < v[i].e)
+//       r.back().e = v[i].e;
+//   // if y[-1].end < x.start:
+//   //     y.append(x)
+//   // elif y[-1].end == x.start:
+//   //     y[-1].end = x.end
+//   }
+//   v=r;
+
+// }
+
+// void add_interval(Real a, Real b, vector<interval> &v)
+// {
+//   if (numtk::iszero(a-b)) return;
+
+//   interval c;
+//   c.s = min(a,b);
+//   c.e = max(a,b);
+//   if (v.size()==0){
+//     v.push_back(c); return;
+//   }
+//   v.push_back(c);
+//   union_interval(v);
+//   // cout << c.s << " " << c.e << endl;
+//   // for (unsigned int j = 0; j < v.size(); j++)
+//   //   cout << "(" << v[j].s << "," <<  v[j].e << "), ";
+//   // cout << endl<<endl;
+  
+// }
+
+
+// void subtract_interval(Real a, Real b, vector<interval> &v)
+// {
+//   if (numtk::iszero(a-b)) return;
+//   interval c,d;
+//   c.s = min(a,b);
+//   c.e = max(a,b);
+
+//   sort(v.begin(), v.end(), interval_sorter);
+
+  
+//   vector<interval> r;
+//   for (unsigned int i = 0; i < v.size(); i++){
+//     if (c.e <= v[i].s){
+//       r.push_back(v[i]);
+//     }else if (c.s <= v[i].s && c.e >= v[i].s && c.e <= v[i].e){
+//       d.s = c.e; d.e = v[i].e; r.push_back(d);
+//     } else if (c.s <= v[i].s && c.e >= v[i].e){
+//       continue;
+//     } else if (c.s >= v[i].s && c.e <= v[i].e){
+//       d.s=v[i].s; d.e=c.s; r.push_back(d);
+//       d.s=c.e; d.e=v[i].e; r.push_back(d);
+//     } else if (c.s >= v[i].s && c.s <= v[i].e && c.e >= v[i].e){
+//       d.s = v[i].s; d.e = c.s; r.push_back(d);
+//     } else if (c.s >= v[i].e){
+//       r.push_back(v[i]);
+//     }
+//   }
+//   v.clear();
+//   for (unsigned int i = 0; i < r.size(); i++)
+//     if (r[i].s!=r[i].e && ~numtk::iszero(r[i].s - r[i].e))
+//         v.push_back(r[i]);
+
+// // cout << c.s << " " << c.e << endl;
+//   // for (unsigned int j = 0; j < v.size(); j++)
+//   //   cout << "(" << v[j].s << "," <<  v[j].e << "), ";
+//   // cout << endl<<endl;
+
+// // The algorithm in python
+
+// // for x in s[:]:
+// //     if z.end < x.start:
+// //         break
+// //     elif z.start < x.start and z.end > x.start and z.end < x.end:
+// //         x.start=z.end
+// //     elif z.start < x.start and z.end > x.end:
+// //         s.remove(x)
+// //     elif z.start > x.start and z.end < x.end:
+// //         s.append(tp(x.start,z.start))
+// //         s.append(tp(z.end,x.end))
+// //         s.remove(x)
+// //     elif z.start > x.start and z.start < x.end and z.end > x.end:
+// //         x.end=z.start
+// //     elif z.start > x.end:
+// //         continue
+// }
+
+// vector<interval> intersection_interval(vector<interval> a, vector<interval> b)
+// {
+//   union_interval(a); union_interval(b);
+//   vector<interval> r;
+//   interval d;
+//   for (unsigned int i = 0; i < a.size(); i++){
+//     for (unsigned int j = 0; j < b.size(); j++){
+//       if (a[i].e < b[i].s || a[i].s > b[i].e){
+//         continue;
+//       }else if ( a[i].s <= b[i].s && a[i].e >= b[i].s && a[i].e <= b[i].e){
+//         d.s = b[i].s; d.e = a[i].e; r.push_back(d);
+//       }else if ( a[i].s <= b[i].s && a[i].e >= b[i].e ){
+//         r.push_back(b[i]);
+//       }else if ( a[i].s >= b[i].s && a[i].e <= b[i].e ){
+//         r.push_back(a[i]);
+//       }else if ( a[i].s >= b[i].s && a[i].s <= b[i].e && a[i].e >= b[i].e){
+//         d.s = a[i].s; d.e = b[i].e; r.push_back(d);
+//       }
+//     }
+//   }
+//   vector<interval> s;
+//   for (unsigned int i = 0; i < r.size(); i++)
+//     if (r[i].s!=r[i].e && ~numtk::iszero(r[i].s - r[i].e))
+//         s.push_back(r[i]);
+
+//   return s;
+
+// }
+
+
+// void subtract_infinity(Real a, bool side, vector<interval> &v)
+// {
+//   interval d;
+
+//   // side == 1 for positive, == 0 for negative
+  
+//   vector<interval> r;
+//   if (side == true){
+//     for (unsigned int i = 0; i < v.size(); i++){
+//       if (a <= v[i].s && a <= v[i].e){
+//         continue;
+//       }else if (a >= v[i].s && a <= v[i].e){
+//         d.s = v[i].s; d.e = a; r.push_back(d);
+//       } else if (a >= v[i].s && a >= v[i].e){
+//         r.push_back(v[i]);
+//       }
+//     }
+//   }else {
+//     for (unsigned int i = 0; i < v.size(); i++){
+//       if (a <= v[i].s && a <= v[i].e){
+//         r.push_back(v[i]);
+//       }else if (a >= v[i].s && a <= v[i].e){
+//         d.s = a; d.e = v[i].e; r.push_back(d);
+//       } else if (a >= v[i].s && a >= v[i].e){
+//         continue;
+//       }
+//     }
+//   }
+//   v.clear();
+//   for (unsigned int i = 0; i < r.size(); i++)
+//     if (r[i].s!=r[i].e && ~numtk::iszero(r[i].s - r[i].e))
+//         v.push_back(r[i]);
 
 
 // }

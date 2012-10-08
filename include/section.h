@@ -4,8 +4,8 @@
 #define __SECTION_H__
 
 #include "pr1.h"
-
-
+#include <vector>
+#include <ostream>
 
 void single_rein_rect(supermesh &s, Real width, Real height, 
                  unsigned int nrein, Real rad, Real dprime);
@@ -26,10 +26,9 @@ vector<Real> project2nodes( mesh &m, std::vector<Real> &vec);
 
 void interaction(supermesh &s);
 
-void interaction_1(supermesh &s);
-void interaction_2(supermesh &s);
 
 void plot_y_vs_sig( supermesh &s, Real a, Real b, Real slope, string lolchar);
+
 
 #endif
 // Local Variables:
