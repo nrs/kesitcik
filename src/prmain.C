@@ -32,15 +32,22 @@ int main(int argc, char** argv) {
   m1.triangulate_mesh(0.1);
 */
   supermesh s;
-//  double_rein_rect(s,300,500,5,8,80,80);
-  single_rein_rect(s,300,500,5,8,80);
+  triple_rein_rect(s,300,500, 
+                   3,8,35, 
+                   3,8,465,
+                   2,8,250);
+//  double_rein_rect(s,300,500, 5,8,80,4,8,420);
+//  single_rein_rect(s,300,500,5,8,80);
 
   char cucu[1024];
   Real slope=-1e-6;
   Real bb=0;
 //  lolfun(s,-0.00350,497.363, -5.39057e-05 ,"lol.vtk");
 
-  interaction(s);
+//  interaction(s,-3e6,3e6,200);
+  interaction(s,-8e8,8e8,200);
+
+
 #if 0
   for (unsigned int i=0 ; i<50; i++, slope+= -1e-7){
     sprintf(cucu, "a%03d.vtk",i);
@@ -74,7 +81,7 @@ int main(int argc, char** argv) {
     if (fabs(fx[1] - 0) < 1e-4 || niter > 10) break;
   }
 #endif
-  return 0;
+
 
   glutMaster   = new GlutMaster();    
   

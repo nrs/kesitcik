@@ -38,10 +38,11 @@ namespace constitutive{
   class steel1: public material{
   public:
     virtual Real sig(Real eps);
-    steel1(Real a, Real b, Real c, Real d);
+    steel1(Real a, Real b, Real c, Real d, Real e, Real f);
     steel1();
   private:
-    void init(Real f_ck, Real eps_0, Real eps_cu1, Real eps_cu2);  
+    void init(Real f_ck, Real eps_0, Real eps_cu1, Real eps_cu2,
+              Real eps_u1, Real eps_u2);  
   };
 
 

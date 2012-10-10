@@ -17,6 +17,7 @@
 #include "point.h"
 #include "constitutive.h"
 #include <cmath>
+
 #define VOLUME_TOLERANCE 1e-4
 
 class node;
@@ -34,6 +35,7 @@ Real calculate_triangle_area_2d(Real a[2], Real b[2], Real c[2]);
 
 namespace numtk{
   std::vector<Real> range(Real st, Real en, unsigned int a);
+  std::string exec(char* cmd);
 
   void output_gp(std::vector<Real> &a, std::vector<Real> &b, string filename);
   void output_gp(std::vector<Real> &a, 
@@ -267,7 +269,8 @@ void rectangular_section(mesh &m, Real left, Real right, Real top, Real bottom);
 void circular_section(mesh &m, Real rad, Real cen[2],int nsides);
 void out_vtk1(list<mesh> &m, vector<vector<Real> > &r, char *lolchar);
 
-
+void out_vtk1(list<mesh> &m, vector<vector<Real> > &r1, 
+              vector<vector<Real> > &r2, char *lolchar);
 
 
 

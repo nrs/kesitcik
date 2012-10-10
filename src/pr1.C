@@ -7,7 +7,21 @@
 #include <time.h>
 
 //#define INSERTINTOVECTOR(a,b) a.insert(a.begin(),b.begin(),b.end())
+
 namespace numtk{
+  std::string exec(char* cmd) {
+    FILE* pipe = popen(cmd, "r");
+    if (!pipe) return "ERROR";
+    char buffer[128];
+    std::string result = "";
+    while(!feof(pipe)) {
+      if(fgets(buffer, 128, pipe) != NULL)
+        result += buffer;
+    }
+    pclose(pipe);
+    return result;
+  }
+
   std::vector<Real> range(Real st, Real en, unsigned int a){
     std::vector<Real> result;
     for (unsigned int i=0; i < a; i++){
@@ -1163,6 +1177,118 @@ void out_vtk1(list<mesh> &m, vector<vector<Real> > &r, char *lolchar){
   fprintf(outfile,"SCALARS alpha float 1\nLOOKUP_TABLE default\n");
   
   for (vec_it = r.begin(); vec_it != r.end(); vec_it++){
+    // if (vec_it->size() != NN) {
+    //   cerr<< "Skipping scalar set with incompatible size." << endl;
+    //   continue;
+    // }
+    for (vector<Real>::iterator it = vec_it->begin();
+         it != vec_it->end(); it++){
+      fprintf(outfile, "%6e\n", *it);
+    }
+  }
+
+  fclose(outfile);
+
+}
+
+
+void out_vtk1(list<mesh> &m, vector<vector<Real> > &r1, 
+              vector<vector<Real> > &r2, char *lolchar){
+  if (r1.size() != m.size() || r2.size() != m.size()){
+    cerr << "out_vtk1: vector sizes do not match." << endl;
+    return;
+  }
+
+  list<mesh>::iterator mesh_it;
+  vector<vector<Real> >::iterator vec_it;
+  unsigned int NEL=0;
+  unsigned int NN=0;
+  
+  vector<unsigned int> NNN(1,0);
+  vector<unsigned int> NELL(1,0);
+
+  
+  for (mesh_it = m.begin(); mesh_it != m.end(); mesh_it++){
+    NN+=mesh_it->nodes.size();
+    NEL+=mesh_it->triangles.size();
+    NNN.push_back(NNN.back()+ mesh_it->nodes.size());
+    NELL.push_back(NELL.back()+mesh_it->triangles.size());
+  }
+
+
+  FILE *outfile;
+  char *vtkfilename = lolchar;
+  int nnodes = 3;
+  int celltype = 5;
+
+  list<node>::iterator node_it;
+  list<triangle>::iterator tri_it;
+
+
+  printf("Writing %s.\n", vtkfilename);
+
+  outfile = fopen(vtkfilename, "w");
+  if (outfile == (FILE *) NULL) {
+    printf("File I/O Error:  Cannot create file %s.\n", vtkfilename);
+    return;
+  }
+
+  fprintf(outfile, "# vtk DataFile Version 2.0\n");
+  fprintf(outfile, "Unstructured Grid\n");
+  fprintf(outfile, "ASCII\n"); // BINARY
+  fprintf(outfile, "DATASET UNSTRUCTURED_GRID\n");
+  fprintf(outfile, "POINTS %d double\n", NN);
+  
+  for (mesh_it = m.begin(); mesh_it != m.end(); mesh_it++){
+    
+    for(node_it=mesh_it->nodes.begin(); node_it!=mesh_it->nodes.end() ; node_it++){
+      Real x = (*node_it)(0);
+      Real y = (*node_it)(1);
+      Real z = (*node_it)(2);
+      
+      fprintf(outfile, "%.6e %.6e %.6e\n", x, y, z);
+    }
+    
+  }
+  fprintf(outfile, "\n");
+
+  fprintf(outfile, "CELLS %d %d\n", NEL, NEL*(nnodes+1));
+
+  unsigned i = 0;
+  for (mesh_it = m.begin(); mesh_it != m.end(); mesh_it++, i++){
+    
+    for(tri_it = mesh_it->triangles.begin(); 
+        tri_it != mesh_it->triangles.end() ; tri_it++){
+      unsigned int n1 = tri_it->nodes[0]->id + NNN[i];
+      unsigned int n2 = tri_it->nodes[1]->id + NNN[i];
+      unsigned int n3 = tri_it->nodes[2]->id + NNN[i];
+      fprintf(outfile, "%d  %4d %4d %4d\n", nnodes, n1, n2, n3);
+    }
+  }
+
+  fprintf(outfile, "\n");
+  
+  fprintf(outfile, "CELL_TYPES %d\n", NEL);
+  for(int tid=0; tid<NEL; tid++){
+    fprintf(outfile, "%d\n", celltype);
+  }
+  fprintf(outfile, "\nPOINT_DATA %d\n\n",NN);
+  fprintf(outfile,"SCALARS A float 1\nLOOKUP_TABLE default\n");
+  
+  for (vec_it = r1.begin(); vec_it != r1.end(); vec_it++){
+    // if (vec_it->size() != NN) {
+    //   cerr<< "Skipping scalar set with incompatible size." << endl;
+    //   continue;
+    // }
+    for (vector<Real>::iterator it = vec_it->begin();
+         it != vec_it->end(); it++){
+      fprintf(outfile, "%6e\n", *it);
+    }
+  }
+
+  fprintf(outfile,"SCALARS B float 1\nLOOKUP_TABLE default\n");
+  
+  for (vec_it = r2.begin(); vec_it != r2.end(); vec_it++){
     // if (vec_it->size() != NN) {
     //   cerr<< "Skipping scalar set with incompatible size." << endl;
     //   continue;
