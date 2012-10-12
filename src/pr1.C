@@ -198,6 +198,56 @@ Real triangle::calc_area(){
 }
 
 
+Real mesh::calc_area(){
+  list<triangle>::iterator it;
+  area=0;
+  for (it=triangles.begin(); it!=triangles.end(); it++){
+    area += it->area;
+  }
+  return area;
+}
+
+Real supermesh::calc_area(){
+  list<mesh>::iterator it;
+  area=0;
+  for (it=meshes.begin(); it!=meshes.end(); it++)
+    area += it->area;
+  return area;
+}
+
+Real mesh::recalc_area(){
+  list<triangle>::iterator it;
+  area=0;
+  for (it=triangles.begin(); it!=triangles.end(); it++){
+    area += it->calc_area();
+  }
+  return area;
+}
+
+node mesh::calc_cg(){
+  list<triangle>::iterator it;
+  cg = node(0,0);
+  calc_area();
+  for (it=triangles.begin(); it!=triangles.end(); it++){
+    cg += it->area * *it->cent;
+  }
+  cg/=area;
+  return cg;
+}
+
+node supermesh::calc_cg(){
+  list<mesh>::iterator it;
+  cg = node(0,0);
+  calc_area();
+  for (it=meshes.begin(); it!=meshes.end(); it++){
+    cg += it->area * it->cg;
+  }
+  cg/=area;
+  cout << cg << endl;
+  return cg;
+}
+
+
 bool do_lines_intersect_exclusive(REAL a[2], REAL b[2], REAL c[2], REAL d[2]){
 // Exclusive of the endpoints of the lines
 // To spell it out: suppose you're looking at two line segments, 
@@ -669,7 +719,8 @@ void mesh::triangulate_mesh(Real minarea)
 
   // Calculate the centroids of the elements.
   init_centroids();
-
+  calc_cg();
+//  cout << cg << endl;
 //  printf("Initial Voronoi diagram:\n\n");
 //  report(&vorout, 0, 0, 0, 0, 1, 1);
 
@@ -999,6 +1050,166 @@ bool mesh::add_node2(unsigned int ln, const Real probrad, const Real avlen){
 
 }
 
+
+bool mesh::in_vtk_lines(char *infilename){
+  FILE *fp;
+//  tetgenio::facet *f;
+//  tetgenio::polygon *p;
+//  char infilename[1024];
+  // char mode[128], id[256], fmt[64];
+  // char *bufferp;
+  // double *coord;
+  Real x, y, z;
+  unsigned int a,b,c;
+  int nverts = 0;
+  // int nfaces = 0;
+  int ncells = 0;
+  // int line_count = 0;
+//  int dummy;
+  // int id1, id2, id3;
+  // int nn = -1;
+  // int nn_old = -1;
+  // int i, j;
+  // int dummm;
+  // int *eleindex;
+
+  // Real lol[3];
+
+  ifstream infile;
+
+  if (infilename[0] == '\0') {
+    printf("Error:  No filename.\n");
+    return false;
+  }
+  if (strcmp(&infilename[strlen(infilename) - 4], ".vtk") != 0) {
+    strcat(infilename, ".vtk");
+  }
+  // if () {
+  //   printf("Error:  Unable to open file %s\n", infilename);
+  //   return false;
+  // }    
+  infile.open (infilename);
+  printf("Opening %s.\n", infilename);
+
+  clear();
+  // Default uses the index starts from '0'.
+  int firstnumber = 0;
+
+  list<node>::iterator node_it;
+  list<line>::iterator line_it;
+
+  std::string iline;
+  string dummy;
+  while (std::getline(infile, iline))
+  {
+    std::istringstream iss(iline);
+    if (std::string::npos != iline.find("POINTS")){
+      cout << iline ;
+      iss >> dummy >> nverts;
+//      cout << nverts << endl;
+      for (unsigned int i = 0; i< nverts ; i++){
+        std::getline(infile, iline);
+        std::istringstream iss(iline);
+        iss >> x >> y >> z;
+        nodes.push_back(node(x,y));
+      }
+    }
+
+    if (std::string::npos != iline.find("CELLS")){
+      cout << iline ;
+      iss >> dummy >> ncells;
+      //    cout << ncells << endl;
+      
+      std::vector<node*> node_ptrs;
+      for (node_it = nodes.begin(); node_it!=nodes.end(); node_it++)
+        node_ptrs.push_back(&(*node_it));
+
+      for(unsigned int i = 0; i < ncells; i++){
+        std::getline(infile, iline);
+        std::istringstream iss(iline);
+        iss >> c >> a >> b;
+//        cout << a << " " << b << endl;
+        lines.push_back( line(node_ptrs[a], node_ptrs[b]) );
+      }
+
+    }
+
+
+  }
+
+#if 0
+
+  while((bufferp = readline(line, fp, &line_count)) != NULL) {
+    if(strlen(line) == 0) continue;
+    //swallow lines beginning with a comment sign or white space
+    if(line[0] == '#' || line[0]=='\n' || line[0] == 10 || line[0] == 13 || 
+       line[0] == 32) continue;
+
+    sscanf(line, "%s", id);
+
+//    printf("%s\n",id);
+    if(!strcmp(id, "POINTS")) {
+      sscanf(line, "%s %d %s", id, &nverts, fmt);
+
+
+      for(i = 0; i < nverts; i++){
+        
+        sscanf(line, "%f %f %f", lol[0] , lol[1] , lol[2] );
+
+        // bufferp = readline(line, fp, &line_count);
+        // if (bufferp == NULL) {
+        //   printf("Unexpected end of file on line %d in file %s\n",
+        //          line_count, infilename);
+        //   fclose(fp);
+        //   return false;
+        // }
+        nodes.push_back(node(lol[0],lol[1]));
+
+
+        // // Read vertex coordinates
+        // coord = &pointlist[i * 3];
+        // for (j = 0; j < 3; j++) {
+        //   if (*bufferp == '\0') {
+        //     printf("Syntax error reading vertex coords on line");
+        //     printf(" %d in file %s\n", line_count, infilename);
+        //     fclose(fp);
+        //     return false;
+        //   }
+        //   coord[j] = (REAL) strtod(bufferp, &bufferp);
+        //   bufferp = findnextnumber(bufferp);
+        // }
+      }
+          
+      continue;
+
+    }
+///////////////////////
+    if(!strcmp(id, "CELLS")) {
+      numberofcorners=4;
+      sscanf(line, "%s %d %s", id, &ncells, &dummm);
+      int dummy,a,b;
+      std::vector<node*> node_ptrs;
+      for (node_it = m.nodes.begin(); node_it!=m.nodes.end(); node_it++)
+        node_ptrs.push_back(&(*node_it));
+
+      for(i = 0; i < ncells; i++){
+        sscanf(line, "%d %f %f", dummy  , a,b);
+        m.lines.push_back( line(node_ptrs[a], node_ptrs[b]) );
+      }
+
+
+      fclose(fp);
+      return true;
+    }
+
+
+  } // while ()
+
+  fclose(fp);
+  return true;
+#endif
+
+}
 
 
 

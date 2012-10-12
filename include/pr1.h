@@ -17,6 +17,7 @@
 #include "point.h"
 #include "constitutive.h"
 #include <cmath>
+#include <cstring>
 
 #define VOLUME_TOLERANCE 1e-4
 
@@ -32,6 +33,7 @@ Point random_vector(Real rad);
 
 Real calculate_triangle_area_2d(node &aa, node &bb, node &cc);
 Real calculate_triangle_area_2d(Real a[2], Real b[2], Real c[2]);
+
 
 namespace numtk{
   std::vector<Real> range(Real st, Real en, unsigned int a);
@@ -177,6 +179,7 @@ public:
 //  std::auto_ptr<int> mat;
   constitutive::material *mat;
 
+  bool in_vtk_lines(char *infilename);
 
   list<node> holes;
   list<node> innode;
@@ -201,6 +204,13 @@ public:
   void init_centroids();
   void subtract(mesh &m);
   void add(mesh &m);
+
+  Real area;
+  Real calc_area();
+  Real recalc_area();
+// center of gravity
+  node cg;
+  node calc_cg();
 
   void color_nodes(unsigned int c);
   void color_lines(unsigned int c);
@@ -239,6 +249,14 @@ public:
   list<node> miscnodes;
   list<line> misclines;
   list<triangle> misctris;
+
+// center of gravity
+  node cg;
+  node calc_cg();
+
+  Real area;
+  Real calc_area();
+
 };
 
 
