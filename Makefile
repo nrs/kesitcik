@@ -40,7 +40,7 @@ LIBS 		= -L/usr/X11R6/lib -lX11 -lXi -lXmu -lglut -lGL -lGLU
 ###############################################################################
 # Target:
 #
-target 	   := ./pr
+target 	   := kesitcall
 
 
 all:: $(target)
@@ -75,14 +75,13 @@ distclean:
 
 run: $(target)
 	@echo "***************************************************************"
-	@echo "* Running Example " $(LIBMESH_RUN) $(target) $(LIBMESH_OPTIONS)
+	@echo "* Running Example " $(target)
 	@echo "***************************************************************"
 	@echo " "
-#@$(LIBMESH_RUN) $(target) $(LIBMESH_OPTIONS)
-	@$(target) mouse.vtk
+	@ ./$(target)
 	@echo " "
 	@echo "***************************************************************"
-	@echo "* Done Running Example " $(LIBMESH_RUN) $(target) $(LIBMESH_OPTIONS)
+	@echo "* Done Running Example " $(target)
 	@echo "***************************************************************"
 
 edit:
@@ -91,4 +90,4 @@ trolo:
 	@echo -e "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
 
 gnuplot:
-	gnuplot -e "plot 'lolfile.txt' using 1:2 w l" -p
+	gnuplot -e "plot 'interaction.txt' using 1:2 w l" -p

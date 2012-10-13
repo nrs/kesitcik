@@ -36,7 +36,8 @@ Real moment( supermesh &s, Real a, Real b, Real slope);
 vector<Real> project2nodes( mesh &m, std::vector<Real> &vec);
 
 //void interaction(supermesh &s);
-vector<vector<Real> > interaction(supermesh &s, unsigned int ndiv, char *ofilename);
+vector<vector<Real> > interaction(supermesh &s, unsigned int ndiv, 
+                                  char *ofilename, bool plotothers=false);
 
 void plot_y_vs_sig( supermesh &s, Real a, Real b, Real slope, string lolchar);
 

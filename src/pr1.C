@@ -500,6 +500,7 @@ void mesh::generate_seed_triangle(Real avlen, Real probrad){
     hull.push_back( &(*line_it) );
 }
 
+#if 0
 void report(struct triangulateio *io, int markers, int reporttriangles,
             int reportneighbors, int reportsegments, int reportedges,
             int reportnorms)
@@ -588,7 +589,7 @@ void report(struct triangulateio *io, int markers, int reporttriangles,
     printf("\n");
   }
 }
-
+#endif
 
 void mesh::triangulate_mesh(Real minarea)
 {
@@ -726,6 +727,7 @@ void mesh::triangulate_mesh(Real minarea)
 
   if (in.holelist!=NULL) free(in.holelist);
   free(in.pointlist);
+  free(in.segmentlist);
   // free(in.pointattributelist);
   // free(in.pointmarkerlist);
   // free(in.regionlist);
@@ -812,7 +814,7 @@ mesh::mesh(){
   nnodes=10;
   avlen=1;
   probrad=0.4;
-  mat = NULL;
+//  mat = NULL;
 }
 
 
@@ -1104,7 +1106,7 @@ bool mesh::in_vtk_lines(char *infilename){
   {
     std::istringstream iss(iline);
     if (std::string::npos != iline.find("POINTS")){
-      cout << iline ;
+//      cout << iline ;
       iss >> dummy >> nverts;
 //      cout << nverts << endl;
       for (unsigned int i = 0; i< nverts ; i++){
@@ -1116,7 +1118,7 @@ bool mesh::in_vtk_lines(char *infilename){
     }
 
     if (std::string::npos != iline.find("CELLS")){
-      cout << iline ;
+//      cout << iline ;
       iss >> dummy >> ncells;
       //    cout << ncells << endl;
       

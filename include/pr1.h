@@ -175,9 +175,8 @@ public:
 
   std::map<node*, std::set<triangle*> > node2tri;
   void init_node2tri();
-//  std::auto_ptr<constitutive::material> mat;
-//  std::auto_ptr<int> mat;
-  constitutive::material *mat;
+
+  constitutive::material mat;
 
   bool in_vtk_lines(char *infilename);
 
@@ -219,7 +218,6 @@ public:
 
   mesh(unsigned int n, Real a, Real p);
   mesh();
-  ~mesh(){if (mat != NULL) delete mat;}
 
 };
 

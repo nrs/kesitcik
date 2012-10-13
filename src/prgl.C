@@ -12,15 +12,19 @@ namespace prgl{
 //static bool g_bFillPolygons = true;
 //static bool g_bTexture = false;
 static bool g_bButton1Down = false;
-//static GLfloat g_fTeapotAngle = 0.0;
-//static GLfloat g_fTeapotAngle2 = 0.0;
+static bool g_bButton2Down = false;
 static GLfloat g_scaling_factor = 0.1;
 static GLfloat g_fViewDistance = 3 * VIEWING_DISTANCE_MIN;
+static GLfloat g_origin_x = 0;
+static GLfloat g_origin_y = 0;
+static GLfloat g_origin_save_x = 0;
+static GLfloat g_origin_save_y = 0;
 static GLfloat g_nearPlane = 10;
 static GLfloat g_farPlane = 10000;
 static int g_Width = 600;                          // Initial window width
 static int g_Height = 600;                         // Initial window height
 static int g_yClick = 0;
+static int g_xClick = 0;
 //static float g_lightPos[4] = { 10, 10, -100, 1 };  // Position of light
 
 static GLfloat basic_colors[]=
@@ -63,29 +67,54 @@ void SetColor(int i)
 
 
 
-
 void  MeshWindow::CallBackMouseFunc(int button, int state, int x, int y)
 {
+
   // Respond to mouse button presses.
   // If button1 pressed, mark this state so we know in motion function.
 
   if (button == GLUT_LEFT_BUTTON)
-    {
-      g_bButton1Down = (state == GLUT_DOWN) ? true : false;
-      g_yClick = y - 3 * g_fViewDistance;
-    }
+  {
+    g_bButton1Down = (state == GLUT_DOWN) ? true : false;
+    g_yClick = y - 3 * g_fViewDistance;
+
+  }
+  if (button == GLUT_RIGHT_BUTTON)
+  {
+
+    g_yClick = y;
+    g_xClick = x;
+    g_origin_save_x = g_origin_x;
+    g_origin_save_y = g_origin_y;
+    g_bButton2Down = (state == GLUT_DOWN) ? true : false;
+
+
+
+  }
+
+
+
 }
 void MeshWindow::CallBackMotionFunc(int x, int y)
 {
   // If button1 pressed, zoom in/out if mouse is moved up/down.
-
+//  cout << g_yClick << " " << g_xClick << " " <<  x<< " " <<y <<endl;
+//  cout <<  g_fViewDistance << endl;
   if (g_bButton1Down)
-    {
-      g_fViewDistance = (y - g_yClick) / 3.0;
-      if (g_fViewDistance < VIEWING_DISTANCE_MIN)
+  {
+    g_fViewDistance = (y - g_yClick) / 3.0;
+    if (g_fViewDistance < VIEWING_DISTANCE_MIN)
          g_fViewDistance = VIEWING_DISTANCE_MIN;
-      glutPostRedisplay();
-    }
+    glutPostRedisplay();
+  }
+  if (g_bButton2Down)
+  {
+
+    g_origin_y = g_origin_save_y + (g_yClick - y);
+    g_origin_x = g_origin_save_x - (g_xClick - x);
+
+    glutPostRedisplay();
+  }
 }
 
 void MeshWindow::draw_node2(node &n, Real rad, int c){
@@ -253,6 +282,8 @@ void MeshWindow::CallBackDisplayFunc()
   glScaled(g_scaling_factor/g_fViewDistance,
            g_scaling_factor/g_fViewDistance,
            g_scaling_factor/g_fViewDistance);
+
+  glTranslated(g_origin_x,g_origin_y,0);
 //  std::cout << g_fViewDistance << std::endl;
 //  glLoadIdentity();
 
@@ -327,13 +358,39 @@ void MeshWindow::CallBackKeyboardFunc(unsigned char key, int x, int y)
     switch(key)
     {
 
-    case 'g':
-//      glmesh->generate1();
+
+    case 'h':
+      g_origin_x+=5/g_scaling_factor;
+      glutPostRedisplay();
+      break;
+    case 'j':
+      g_origin_y+=5/g_scaling_factor;
+      glutPostRedisplay();
+      break;
+    case 'k':
+      g_origin_y-=5/g_scaling_factor;
+      glutPostRedisplay();
+      break;
+    case 'l':
+      g_origin_x-=5/g_scaling_factor;
       glutPostRedisplay();
       break;
 
-    case 's':
-//      glmesh->out_vtk1();
+    case 'H':
+      g_origin_x+=1/g_scaling_factor;
+      glutPostRedisplay();
+      break;
+    case 'J':
+      g_origin_y+=1/g_scaling_factor;
+      glutPostRedisplay();
+      break;
+    case 'K':
+      g_origin_y-=1/g_scaling_factor;
+      glutPostRedisplay();
+      break;
+    case 'L':
+      g_origin_x-=1/g_scaling_factor;
+      glutPostRedisplay();
       break;
 
     case '+':

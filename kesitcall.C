@@ -10,50 +10,38 @@ GlutMaster  * glutMaster;
 MeshWindow  * firstWindow = 0;
 
 using namespace std;
+void gl_window_supermesh(supermesh &s);
 
 
 int main(int argc, char** argv) {
   
 
 
-  supermesh s;
+//  supermesh s;
   // triple_rein_rect(s,300,500, 
   //                  3,8,35, 
   //                  3,8,465,
   //                  2,8,250);
 //  double_rein_rect(s,300,500, 5,8,80,4,8,420);
 //  single_rein_rect(s,300,500,5,8,80);
-  duck_section(s);
-
-//  lolfun(s,-0.00350,497.363, -5.39057e-05 ,"lol.vtk");
+//  duck_section(s);
 
 
-  interaction(s,200, "interaction.txt");
 
-
-#if 0
+//  interaction(s,500, "dck");
   char cucu[1024];
-  Real slope=-1e-6;
-  Real bb=0;
-
-  for (unsigned int i=0 ; i<50; i++, slope+= -1e-7){
-    sprintf(cucu, "a%03d.vtk",i);
-    lolfun(s,slope,250,cucu);
-
-
+  for (unsigned int i = 4; i<10; i++){
+    supermesh *s = new supermesh;
+    single_rein_rect(*s,300,500,5,i,80);
+    sprintf(cucu,"l%02d",i);
+    interaction(*s,500, cucu);
+    delete s;
   }
-#endif
 
-#if 0
-  for (unsigned int i=0 ; i<500; i++, bb+= 1){
-    Real M,F;
-    // sprintf(cucu, "a%03d.vtk",i);
-    // lolfun(m,aa,bb,cucu);
-    normal_force(s,0,bb,slope);
-//    normal_and_moment(m,F,M,0,bb,slope);
-//    moment(s,0,bb,slope);
-  }
-#endif
+
+
+//  gl_window_supermesh(*s);
+
 #if 0
   unsigned int niter = 0;
   Real x[3] = {0.000,-0.00001,-0.00005}; Real fx[2],pivot = 3.5e-5;
@@ -69,7 +57,12 @@ int main(int argc, char** argv) {
   }
 #endif
 
+  return 0;
 
+}
+
+
+void gl_window_supermesh(supermesh &s){
   glutMaster   = new GlutMaster();    
   
   firstWindow  = new MeshWindow(glutMaster,
@@ -84,5 +77,3 @@ int main(int argc, char** argv) {
   glutMaster->CallGlutMainLoop();
 
 }
-
-
