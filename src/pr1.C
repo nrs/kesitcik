@@ -469,36 +469,36 @@ void mesh::init_node2tri(){
 }
 
 
-void mesh::generate_seed_triangle(Real avlen, Real probrad){
-// Seed triangle
-  clear();
-  node *n0,*n1,*n2;
-  line *l0,*l1,*l2;
-  for (unsigned int i=0; i< 3; i++) nodes.push_back(node());
+// void mesh::generate_seed_triangle(Real avlen, Real probrad){
+// // Seed triangle
+//   clear();
+//   node *n0,*n1,*n2;
+//   line *l0,*l1,*l2;
+//   for (unsigned int i=0; i< 3; i++) nodes.push_back(node());
 
-  std::list<node>::iterator node_it;
-  std::list<line>::iterator line_it;
-//  std::list<line*>::iterator bine_it;
+//   std::list<node>::iterator node_it;
+//   std::list<line>::iterator line_it;
+// //  std::list<line*>::iterator bine_it;
 
-  node_it=nodes.begin(); 
-  n0 = &(*node_it);
-  node_it++;
-  n1 = &(*node_it);
-  //nodes[0](0)=0;nodes[0](1)=0;nodes[0](2)=0;
-  (*node_it)(0) = avlen; 
-  *node_it += random_vector(probrad);
+//   node_it=nodes.begin(); 
+//   n0 = &(*node_it);
+//   node_it++;
+//   n1 = &(*node_it);
+//   //nodes[0](0)=0;nodes[0](1)=0;nodes[0](2)=0;
+//   (*node_it)(0) = avlen; 
+//   *node_it += random_vector(probrad);
 
-  *node_it++;
-  n2 = &(*node_it);
-  (*node_it)(0) = avlen/2;
-  (*node_it)(1) = avlen*sqrt(3)/2;
-  *node_it += random_vector(probrad);
+//   *node_it++;
+//   n2 = &(*node_it);
+//   (*node_it)(0) = avlen/2;
+//   (*node_it)(1) = avlen*sqrt(3)/2;
+//   *node_it += random_vector(probrad);
 
-  triangles.push_front(triangle(n0,n1,n2,*this));
+//   triangles.push_front(triangle(n0,n1,n2,*this));
 
-  for (line_it=lines.begin(); line_it!=lines.end(); line_it++) 
-    hull.push_back( &(*line_it) );
-}
+//   for (line_it=lines.begin(); line_it!=lines.end(); line_it++) 
+//     hull.push_back( &(*line_it) );
+// }
 
 #if 0
 void report(struct triangulateio *io, int markers, int reporttriangles,
@@ -810,57 +810,57 @@ void mesh::numbernodes(){
 }
 
 
-mesh::mesh(){
-  nnodes=10;
-  avlen=1;
-  probrad=0.4;
-//  mat = NULL;
-}
+// mesh::mesh(){
+//   nnodes=10;
+//   avlen=1;
+//   probrad=0.4;
+// //  mat = NULL;
+// }
 
 
-void mesh::generate1(unsigned int n, Real a, Real p){
-  nnodes=n;
-  avlen=a;
-  probrad=p;
-  generate1();
-}
+// void mesh::generate1(unsigned int n, Real a, Real p){
+//   nnodes=n;
+//   avlen=a;
+//   probrad=p;
+//   generate1();
+// }
 
 
-void mesh::generate1(){
-  std::cout << "Generating...";
-  clock_t start, end;
-  start = clock();//time(NULL);
+// void mesh::generate1(){
+//   std::cout << "Generating...";
+//   clock_t start, end;
+//   start = clock();//time(NULL);
 
-// Form the seed triangle
-  std::list<node>::iterator node_it;
-  std::list<line>::iterator line_it;
-  std::list<line*>::iterator bine_it;
+// // Form the seed triangle
+//   std::list<node>::iterator node_it;
+//   std::list<line>::iterator line_it;
+//   std::list<line*>::iterator bine_it;
 
-  generate_seed_triangle(avlen,probrad);
+//   generate_seed_triangle(avlen,probrad);
 
-//  hull.insert(hull.begin(),lines.begin(),lines.end());
-//  std::vector<line>::iterator rl;
-#if 1
-  for (unsigned int i = 0 ; (nodes.size() < nnodes)&&(i<10*nnodes) ; i++)
-#else
-  for (unsigned int i = 0 ; (nodes.size() < nnodes) ; i++)
-#endif
+// //  hull.insert(hull.begin(),lines.begin(),lines.end());
+// //  std::vector<line>::iterator rl;
+// #if 1
+//   for (unsigned int i = 0 ; (nodes.size() < nnodes)&&(i<10*nnodes) ; i++)
+// #else
+//   for (unsigned int i = 0 ; (nodes.size() < nnodes) ; i++)
+// #endif
 
-  {
-//    line rl = get_random_hull_elem();
-    unsigned int rn=random_range(0,hull.size());
-//    random_n< std::vector<line>::iterator > (hull.begin(),hull.end());
-    add_node2(rn, probrad, avlen);
-//    display();    glutPostRedisplay();
-  }
+//   {
+// //    line rl = get_random_hull_elem();
+//     unsigned int rn=random_range(0,hull.size());
+// //    random_n< std::vector<line>::iterator > (hull.begin(),hull.end());
+//     add_node2(rn, probrad, avlen);
+// //    display();    glutPostRedisplay();
+//   }
 
-  numbernodes();
-  end = clock();//time(NULL);
-  std::cout << " in " << (end-start) / (REAL) CLOCKS_PER_SEC << " seconds." << std::endl;
+//   numbernodes();
+//   end = clock();//time(NULL);
+//   std::cout << " in " << (end-start) / (REAL) CLOCKS_PER_SEC << " seconds." << std::endl;
 
-  print_info();
+//   print_info();
 
-}
+// }
 
 
 
@@ -926,131 +926,131 @@ void mesh::clear(){
   holes.clear(); centroids.clear();
 }
 
-bool mesh::add_node2(unsigned int ln, const Real probrad, const Real avlen){
-  std::list<node>::iterator node_it;
-  std::list<line>::iterator line_it;
-  std::list<line*>::iterator bine_it;
+// bool mesh::add_node2(unsigned int ln, const Real probrad, const Real avlen){
+//   std::list<node>::iterator node_it;
+//   std::list<line>::iterator line_it;
+//   std::list<line*>::iterator bine_it;
 
-  bine_it=hull.begin();
-  std::advance(bine_it,ln);
-  line *l=(*bine_it);//hull[ln];
+//   bine_it=hull.begin();
+//   std::advance(bine_it,ln);
+//   line *l=(*bine_it);//hull[ln];
 
-  node *n0 = l->nodes[0];
-  node *n1 = l->nodes[1];
-//  Real length = calculate_line_length_2d(*n0,*n1);
-  line *l0, *l1;
-  Point median, difference, poot, final,finam;
-  median = (*n1 + *n0);//(l.nodes[1] + l.nodes[0]);
-  for (unsigned int i=0; i<2;i++) median(i)/=2;
-//  std::cout<<median;
+//   node *n0 = l->nodes[0];
+//   node *n1 = l->nodes[1];
+// //  Real length = calculate_line_length_2d(*n0,*n1);
+//   line *l0, *l1;
+//   Point median, difference, poot, final,finam;
+//   median = (*n1 + *n0);//(l.nodes[1] + l.nodes[0]);
+//   for (unsigned int i=0; i<2;i++) median(i)/=2;
+// //  std::cout<<median;
 
-  difference = *n1 - *n0;
-  poot(0)=-1*difference(1); poot(1)= difference(0);
-  for (unsigned int i=0; i<2;i++) poot(i)*=sqrt(3)/2;
+//   difference = *n1 - *n0;
+//   poot(0)=-1*difference(1); poot(1)= difference(0);
+//   for (unsigned int i=0; i<2;i++) poot(i)*=sqrt(3)/2;
 
-  Point trolol = random_vector(probrad);
-  if (l->rh==true){
-    final = median - poot + trolol;
-  }else{
-    final = median + poot + trolol;
-  }
+//   Point trolol = random_vector(probrad);
+//   if (l->rh==true){
+//     final = median - poot + trolol;
+//   }else{
+//     final = median + poot + trolol;
+//   }
 
-   // final(0)+=0.05;
-   // finam(0)+=0.05;
+//    // final(0)+=0.05;
+//    // finam(0)+=0.05;
 
-//  std::cout<<final << std::endl;
+// //  std::cout<<final << std::endl;
     
 
-//  node newnode(final(0),final(1));
-  node lolnode(final(0),final(1));
+// //  node newnode(final(0),final(1));
+//   node lolnode(final(0),final(1));
 
-  if ( is_node_inside(lolnode) ){
-      return false;
-  }
+//   if ( is_node_inside(lolnode) ){
+//       return false;
+//   }
 
-// Intersection test    
-  line lolline1(&lolnode,n1,true);
-  line lolline2(n0,&lolnode,true);
+// // Intersection test    
+//   line lolline1(&lolnode,n1,true);
+//   line lolline2(n0,&lolnode,true);
 
-//  line lolline3(n1,&lolnode,true);line lolline4(&lolnode,n0,true);
-
-
-#if 1
-  for (std::list<line*>::iterator it = hull.begin(); 
-       it!=hull.end() ; it++){
-    if ( *it != l ){
-      if ((*it)->intersect_line(lolline1) || (*it)->intersect_line(lolline2)) {
-#ifdef DEBUG
-        std::cout << "Lines intersect."<< std::endl;
-        std::cout << std::endl;
-#endif
-        return false;
-      }
-    }
-  }
-#else
-  // for (std::list<line>::iterator it = lines.begin(); 
-  //      it!=lines.end() ; it++){
-  //   if (&(*it) != l && 
-  //       ((*it).intersect_line(lolline1) || (*it).intersect_line(lolline2)) ){
-  //     std::cout << "Lines intersect."<< std::endl;
-  //     return false;
-  //   }
-  // }
-#endif
-
-#if 1
-// Area tests:
-  Real area = calculate_triangle_area_2d(*n0, *n1, lolnode) ;
-  Real equilateral = 0.43301270189 * avlen*avlen;
-
-  if ( area < 0.2* equilateral||
-       area > 2* equilateral){
-    return false;
-  }
-
-#endif
+// //  line lolline3(n1,&lolnode,true);line lolline4(&lolnode,n0,true);
 
 
-// Remove from hull
-  hull.erase(bine_it);
+// #if 1
+//   for (std::list<line*>::iterator it = hull.begin(); 
+//        it!=hull.end() ; it++){
+//     if ( *it != l ){
+//       if ((*it)->intersect_line(lolline1) || (*it)->intersect_line(lolline2)) {
+// #ifdef DEBUG
+//         std::cout << "Lines intersect."<< std::endl;
+//         std::cout << std::endl;
+// #endif
+//         return false;
+//       }
+//     }
+//   }
+// #else
+//   // for (std::list<line>::iterator it = lines.begin(); 
+//   //      it!=lines.end() ; it++){
+//   //   if (&(*it) != l && 
+//   //       ((*it).intersect_line(lolline1) || (*it).intersect_line(lolline2)) ){
+//   //     std::cout << "Lines intersect."<< std::endl;
+//   //     return false;
+//   //   }
+//   // }
+// #endif
+
+// #if 1
+// // Area tests:
+//   Real area = calculate_triangle_area_2d(*n0, *n1, lolnode) ;
+//   Real equilateral = 0.43301270189 * avlen*avlen;
+
+//   if ( area < 0.2* equilateral||
+//        area > 2* equilateral){
+//     return false;
+//   }
+
+// #endif
 
 
-  nodes.push_front(lolnode);
-  node *newnode = &(*nodes.begin());
-//  node *newnode = &(*( nodes.end() ));
-//  std::cout << &(nodes.back()) << std::endl;
+// // Remove from hull
+//   hull.erase(bine_it);
 
 
-// Add new lines to lines and hull
-//  std::vector<line> newlines;
-//  std::list<line>::reverse_iterator rline_it;
-  lines.push_front(line(newnode,n1,true));
-//  lines.push_front(line(newnode,n0,true));
-  lines.push_front(line(n0,newnode,true));
-  line_it=lines.begin();
-//  line_it++;
-  l0=& (*line_it);
-  line_it++;
-  l1=& (*line_it);
-
-  triangles.push_front( triangle(l,l0,l1) );
-
-  hull.push_front( l0 );
-  hull.push_front( l1 );
-//  std::cout<< "ASDASDAS "<< & lines.at(lines.size()-1)<< " " << newnode <<std::endl;
-//  std::cout<< "ASDASDAS "<< & lines.at(lines.size()-2)<< " " << newnode <<std::endl;
+//   nodes.push_front(lolnode);
+//   node *newnode = &(*nodes.begin());
+// //  node *newnode = &(*( nodes.end() ));
+// //  std::cout << &(nodes.back()) << std::endl;
 
 
-//  newnode->id=999;
-//  std::cout<<newnode->id << std::endl;
+// // Add new lines to lines and hull
+// //  std::vector<line> newlines;
+// //  std::list<line>::reverse_iterator rline_it;
+//   lines.push_front(line(newnode,n1,true));
+// //  lines.push_front(line(newnode,n0,true));
+//   lines.push_front(line(n0,newnode,true));
+//   line_it=lines.begin();
+// //  line_it++;
+//   l0=& (*line_it);
+//   line_it++;
+//   l1=& (*line_it);
+
+//   triangles.push_front( triangle(l,l0,l1) );
+
+//   hull.push_front( l0 );
+//   hull.push_front( l1 );
+// //  std::cout<< "ASDASDAS "<< & lines.at(lines.size()-1)<< " " << newnode <<std::endl;
+// //  std::cout<< "ASDASDAS "<< & lines.at(lines.size()-2)<< " " << newnode <<std::endl;
 
 
-//  hull.erase(std::find(hull.begin(),hull.end(),l));
-//  hull.erase(std::remove(hull.begin(), hull.end(), l), hull.end());
-  return true;
+// //  newnode->id=999;
+// //  std::cout<<newnode->id << std::endl;
 
-}
+
+// //  hull.erase(std::find(hull.begin(),hull.end(),l));
+// //  hull.erase(std::remove(hull.begin(), hull.end(), l), hull.end());
+//   return true;
+
+// }
 
 
 bool mesh::in_vtk_lines(char *infilename){
@@ -1516,139 +1516,139 @@ void out_vtk1(list<mesh> &m, vector<vector<Real> > &r1,
 
 }
 
-#if 0
-bool mesh::add_node1(unsigned int ln, const Real probrad, const Real avlen){
-  std::list<node>::iterator node_it;
-  std::list<line>::iterator line_it;
-  std::list<line*>::iterator bine_it;
+// #if 0
+// bool mesh::add_node1(unsigned int ln, const Real probrad, const Real avlen){
+//   std::list<node>::iterator node_it;
+//   std::list<line>::iterator line_it;
+//   std::list<line*>::iterator bine_it;
 
-  bine_it=hull.begin();
-  std::advance(bine_it,ln);
-  line *l=(*bine_it);//hull[ln];
+//   bine_it=hull.begin();
+//   std::advance(bine_it,ln);
+//   line *l=(*bine_it);//hull[ln];
 
-  node *n0 = l->nodes[0];
-  node *n1 = l->nodes[1];
-  Real length = calculate_line_length_2d(*n0,*n1);
-  line *l0, *l1;
-  Point median, difference, poot, final,finam;
-  median = (*n1 + *n0);//(l.nodes[1] + l.nodes[0]);
-  for (unsigned int i=0; i<2;i++) median(i)/=2;
-//  std::cout<<median;
+//   node *n0 = l->nodes[0];
+//   node *n1 = l->nodes[1];
+//   Real length = calculate_line_length_2d(*n0,*n1);
+//   line *l0, *l1;
+//   Point median, difference, poot, final,finam;
+//   median = (*n1 + *n0);//(l.nodes[1] + l.nodes[0]);
+//   for (unsigned int i=0; i<2;i++) median(i)/=2;
+// //  std::cout<<median;
 
-  difference = *n1 - *n0;
-  poot(0)=-1*difference(1); poot(1)= difference(0);
-  for (unsigned int i=0; i<2;i++) poot(i)*=sqrt(3)/2;
+//   difference = *n1 - *n0;
+//   poot(0)=-1*difference(1); poot(1)= difference(0);
+//   for (unsigned int i=0; i<2;i++) poot(i)*=sqrt(3)/2;
 
-  Point trolol = random_vector(probrad);
-//  if (l->rh==true){
-  final = median - poot + trolol;
-//  }else{
-  finam = median + poot + trolol;
-//  }
+//   Point trolol = random_vector(probrad);
+// //  if (l->rh==true){
+//   final = median - poot + trolol;
+// //  }else{
+//   finam = median + poot + trolol;
+// //  }
 
-   // final(0)+=0.05;
-   // finam(0)+=0.05;
+//    // final(0)+=0.05;
+//    // finam(0)+=0.05;
 
-//  std::cout<<final << std::endl;
+// //  std::cout<<final << std::endl;
     
-  node lolnode;
-//  node newnode(final(0),final(1));
-  node lolnode1(final(0),final(1));
-  node lolnode2(finam(0),finam(1));
-  if ( is_node_inside(lolnode1) ){
-    if ( is_node_inside(lolnode2) )
-      return false;
-    else
-//      std::cout << "false" << std::endl;
-      lolnode = lolnode2;
-  } else {
-//    std::cout << "true" << std::endl;
-    lolnode = lolnode1;
+//   node lolnode;
+// //  node newnode(final(0),final(1));
+//   node lolnode1(final(0),final(1));
+//   node lolnode2(finam(0),finam(1));
+//   if ( is_node_inside(lolnode1) ){
+//     if ( is_node_inside(lolnode2) )
+//       return false;
+//     else
+// //      std::cout << "false" << std::endl;
+//       lolnode = lolnode2;
+//   } else {
+// //    std::cout << "true" << std::endl;
+//     lolnode = lolnode1;
 
-  }
-// Intersection test    
-  line lolline1(n1,&lolnode,true),lolline2(&lolnode,n0,true);
-
-
-  // Real a[2]={-1,0};
-  // Real b[2]={1,0};
-  // Real c[2]={0,-1};
-  // Real d[2]={0,0.001};
-
-  // std::cout<<"ASDASDASDASD  "<< do_lines_intersect(a,b,c,d) << std::endl;
-#if 1
-  for (std::list<line*>::iterator it = hull.begin(); 
-       it!=hull.end() ; it++){
-    if ( *it != l &&
-      ((*it)->intersect_line(lolline1) || (*it)->intersect_line(lolline2)) ){
-#ifdef DEBUG
-      std::cout << "Lines intersect."<< std::endl;
-#endif
-      return false;
-    }
-  }
-#else
-  for (std::list<line>::iterator it = lines.begin(); 
-       it!=lines.end() ; it++){
-    if (&(*it) != l && 
-        ((*it).intersect_line(lolline1) || (*it).intersect_line(lolline2)) ){
-      std::cout << "Lines intersect."<< std::endl;
-      return false;
-    }
-  }
+//   }
+// // Intersection test    
+//   line lolline1(n1,&lolnode,true),lolline2(&lolnode,n0,true);
 
 
-#endif
+//   // Real a[2]={-1,0};
+//   // Real b[2]={1,0};
+//   // Real c[2]={0,-1};
+//   // Real d[2]={0,0.001};
 
-// Area tests:
-  Real area = calculate_triangle_area_2d(*n0, *n1, lolnode) ;
-//  Real equilateral = 0.43301270189 * length*length;
+//   // std::cout<<"ASDASDASDASD  "<< do_lines_intersect(a,b,c,d) << std::endl;
+// #if 1
+//   for (std::list<line*>::iterator it = hull.begin(); 
+//        it!=hull.end() ; it++){
+//     if ( *it != l &&
+//       ((*it)->intersect_line(lolline1) || (*it)->intersect_line(lolline2)) ){
+// #ifdef DEBUG
+//       std::cout << "Lines intersect."<< std::endl;
+// #endif
+//       return false;
+//     }
+//   }
+// #else
+//   for (std::list<line>::iterator it = lines.begin(); 
+//        it!=lines.end() ; it++){
+//     if (&(*it) != l && 
+//         ((*it).intersect_line(lolline1) || (*it).intersect_line(lolline2)) ){
+//       std::cout << "Lines intersect."<< std::endl;
+//       return false;
+//     }
+//   }
+
+
+// #endif
+
+// // Area tests:
+//   Real area = calculate_triangle_area_2d(*n0, *n1, lolnode) ;
+// //  Real equilateral = 0.43301270189 * length*length;
   
-  Real equilateral = 0.43301270189 * avlen*avlen;
+//   Real equilateral = 0.43301270189 * avlen*avlen;
 
-  if ( area < 0.2* equilateral||
-       area > 2* equilateral){
-    return false;
-  }
-
-
-// Remove from hull
-  hull.erase(bine_it);
+//   if ( area < 0.2* equilateral||
+//        area > 2* equilateral){
+//     return false;
+//   }
 
 
-  nodes.push_front(lolnode);
-  node *newnode = &(*nodes.begin());
-//  node *newnode = &(*( nodes.end() ));
-//  std::cout << &(nodes.back()) << std::endl;
+// // Remove from hull
+//   hull.erase(bine_it);
 
 
-// Add new lines to lines and hull
-//  std::vector<line> newlines;
-//  std::list<line>::reverse_iterator rline_it;
-  lines.push_front(line(n1,newnode,true));
-  lines.push_front(line(newnode,n0,true));
-  line_it=lines.begin();
-//  line_it++;
-  l0=& (*line_it);
-  line_it++;
-  l1=& (*line_it);
-
-  triangles.push_front( triangle(l,l0,l1) );
-
-  hull.push_front( l0 );
-  hull.push_front( l1 );
-//  std::cout<< "ASDASDAS "<< & lines.at(lines.size()-1)<< " " << newnode <<std::endl;
-//  std::cout<< "ASDASDAS "<< & lines.at(lines.size()-2)<< " " << newnode <<std::endl;
+//   nodes.push_front(lolnode);
+//   node *newnode = &(*nodes.begin());
+// //  node *newnode = &(*( nodes.end() ));
+// //  std::cout << &(nodes.back()) << std::endl;
 
 
-//  newnode->id=999;
-//  std::cout<<newnode->id << std::endl;
+// // Add new lines to lines and hull
+// //  std::vector<line> newlines;
+// //  std::list<line>::reverse_iterator rline_it;
+//   lines.push_front(line(n1,newnode,true));
+//   lines.push_front(line(newnode,n0,true));
+//   line_it=lines.begin();
+// //  line_it++;
+//   l0=& (*line_it);
+//   line_it++;
+//   l1=& (*line_it);
+
+//   triangles.push_front( triangle(l,l0,l1) );
+
+//   hull.push_front( l0 );
+//   hull.push_front( l1 );
+// //  std::cout<< "ASDASDAS "<< & lines.at(lines.size()-1)<< " " << newnode <<std::endl;
+// //  std::cout<< "ASDASDAS "<< & lines.at(lines.size()-2)<< " " << newnode <<std::endl;
 
 
-//  hull.erase(std::find(hull.begin(),hull.end(),l));
-//  hull.erase(std::remove(hull.begin(), hull.end(), l), hull.end());
-  return true;
+// //  newnode->id=999;
+// //  std::cout<<newnode->id << std::endl;
 
-}
 
-#endif
+// //  hull.erase(std::find(hull.begin(),hull.end(),l));
+// //  hull.erase(std::remove(hull.begin(), hull.end(), l), hull.end());
+//   return true;
+
+// }
+
+// #endif

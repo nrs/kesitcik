@@ -13,7 +13,7 @@ namespace constitutive{
 
   class material{
   public:
-    Real sig(Real eps){return 0;};
+    virtual Real sig(Real eps){};
     std::vector<Real> par;
     Real epsult[2];
     std::string description;
@@ -28,7 +28,8 @@ namespace constitutive{
 
   class concrete1: public material{
   public:
-    virtual Real sig(Real eps);
+//    using material::sig;
+    Real sig(Real eps);
     concrete1(Real a, Real b, Real c, Real d);
     concrete1();
   private:
@@ -37,7 +38,8 @@ namespace constitutive{
 
   class steel1: public material{
   public:
-    virtual Real sig(Real eps);
+//    using material::sig;
+    Real sig(Real eps);
     steel1(Real a, Real b, Real c, Real d, Real e, Real f);
     steel1();
   private:

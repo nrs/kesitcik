@@ -160,12 +160,14 @@ inline void add_line(node a, node b, list<node> &ln, list<line> &ll){
 
 }
 
-
+using constitutive::material;
 class mesh
 {
 public:
-  unsigned int nnodes;
-  Real avlen, probrad;
+  
+  // unsigned int nnodes;
+  // Real avlen, probrad;
+
   std::list<node> nodes;
   std::list<node> centroids;
 
@@ -176,25 +178,26 @@ public:
   std::map<node*, std::set<triangle*> > node2tri;
   void init_node2tri();
 
-  constitutive::material mat;
+//  auto_ptr<material> mat(new material());
+  material *mat;
 
   bool in_vtk_lines(char *infilename);
 
   list<node> holes;
   list<node> innode;
 
-  void generate1(unsigned int n, Real a, Real p);
-  void generate1();
+  // void generate1(unsigned int n, Real a, Real p);
+  // void generate1();
 
   void numbernodes();
   line* get_random_hull_elem();
-  bool add_node1(unsigned int ln, const Real probrad, const Real avlen);
-  bool add_node2(unsigned int ln, const Real probrad, const Real avlen);
+  // bool add_node1(unsigned int ln, const Real probrad, const Real avlen);
+  // bool add_node2(unsigned int ln, const Real probrad, const Real avlen);
 
   void print_info();
   void out_vtk1(bool ohull=false);
 
-  void generate_seed_triangle(Real avlen, Real probrad);
+  // void generate_seed_triangle(Real avlen, Real probrad);
   bool is_node_inside(node &n);
   bool intersect_line(line &l);
   void clear();
@@ -216,8 +219,12 @@ public:
   void color_triangles(unsigned int c);
   void color_mesh(unsigned int a,unsigned int b,unsigned int c);
 
-  mesh(unsigned int n, Real a, Real p);
-  mesh();
+  // mesh(unsigned int n, Real a, Real p);
+  mesh(){mat = NULL;}
+  ~mesh(){
+    if (mat != NULL)
+      delete mat;
+  }
 
 };
 

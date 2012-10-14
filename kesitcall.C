@@ -17,18 +17,18 @@ int main(int argc, char** argv) {
   
 
 
-//  supermesh s;
+  supermesh s;
   // triple_rein_rect(s,300,500, 
   //                  3,8,35, 
   //                  3,8,465,
   //                  2,8,250);
 //  double_rein_rect(s,300,500, 5,8,80,4,8,420);
-//  single_rein_rect(s,300,500,5,8,80);
+  single_rein_rect(s,300,500,5,8,80);
 //  duck_section(s);
+  interaction(s,500, "dck");
+  gl_window_supermesh(s);
 
-
-
-//  interaction(s,500, "dck");
+#if 0
   char cucu[1024];
   for (unsigned int i = 4; i<10; i++){
     supermesh *s = new supermesh;
@@ -37,7 +37,7 @@ int main(int argc, char** argv) {
     interaction(*s,500, cucu);
     delete s;
   }
-
+#endif
 
 
 //  gl_window_supermesh(*s);
@@ -70,10 +70,7 @@ void gl_window_supermesh(supermesh &s){
                                 0, 0,    // initPosition (x,y)
                                 "Poot"); // title
   firstWindow->glsupermesh = &s;
-
   firstWindow->init();
-
-
   glutMaster->CallGlutMainLoop();
 
 }

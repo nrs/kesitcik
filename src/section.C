@@ -1,7 +1,7 @@
 #include "section.h"
 #include "interval.h"
 
-
+using namespace constitutive;
 void single_rein_rect(supermesh &s, Real width, Real height, 
                  unsigned int nrein, Real rad, Real dprime)
 {
@@ -21,8 +21,10 @@ void single_rein_rect(supermesh &s, Real width, Real height,
   s.meshes.back().triangulate_mesh(50);//5
 
 // Materials
-  s.meshes.front().mat = constitutive::concrete1();
-  s.meshes.back().mat = constitutive::steel1();
+  // s.meshes.front().mat=auto_ptr<material>(new concrete1);
+  // s.meshes.back().mat=auto_ptr<material>(new steel1);
+  s.meshes.front().mat = new concrete1;
+  s.meshes.back().mat = new steel1;
 
 // Print info
   s.meshes.front().print_info(); cout<<endl;
@@ -63,8 +65,13 @@ void double_rein_rect(supermesh &s, Real width, Real height,
   s.meshes.back().triangulate_mesh(50);//5
 
 // Materials
-  s.meshes.front().mat = constitutive::concrete1();
-  s.meshes.back().mat = constitutive::steel1();
+  // s.meshes.front().mat = concrete1();
+  // s.meshes.back().mat = steel1();
+//  s.meshes.front().mat=auto_ptr<material>(new concrete1);
+//  s.meshes.back().mat=auto_ptr<material>(new steel1);
+  s.meshes.front().mat = new concrete1;
+  s.meshes.back().mat = new steel1;
+
 
 // Print info
   s.meshes.front().print_info(); cout<<endl;
@@ -104,8 +111,12 @@ void triple_rein_rect(supermesh &s, Real width, Real height,
   s.meshes.back().triangulate_mesh(50);//5
 
 // Materials
-  s.meshes.front().mat = constitutive::concrete1();
-  s.meshes.back().mat = constitutive::steel1();
+  s.meshes.front().mat = new concrete1;
+  s.meshes.back().mat = new steel1;
+//  s.meshes.front().mat=auto_ptr<material>(new concrete1);
+//  s.meshes.back().mat=auto_ptr<material>(new steel1);
+  // s.meshes.front().mat = concrete1();
+  // s.meshes.back().mat = steel1();
 
 // Print info
   s.meshes.front().print_info(); cout<<endl;
@@ -179,8 +190,13 @@ void duck_section(supermesh &s)
   s.meshes.back().color_mesh(0,0,1);
   s.meshes.front().color_mesh(0,0,4);
 
-  s.meshes.front().mat = constitutive::concrete1();
-  s.meshes.back().mat = constitutive::steel1();
+  s.meshes.front().mat = new concrete1;
+  s.meshes.back().mat = new steel1;
+//  s.meshes.front().mat=auto_ptr<material>(new concrete1);
+//  s.meshes.back().mat=auto_ptr<material>(new steel1);
+
+  // s.meshes.front().mat = concrete1();
+  // s.meshes.back().mat = steel1();
 
 }
 
@@ -228,7 +244,7 @@ Real normal_force( supermesh &s, Real a, Real b, Real slope){
     for (tri_it = mesh_it->triangles.begin(); 
          tri_it!=mesh_it->triangles.end(); tri_it++){
       eps = slope * ( (*tri_it->cent)(1) - b) + a ;
-      sig = mesh_it->mat.sig(eps) ;
+      sig = mesh_it->mat->sig(eps) ;
       F+=tri_it->area *sig;
     }
   }
@@ -248,7 +264,7 @@ Real normal_force( supermesh &s, Real a, Real b, Real slope){
 //          tri_it!=mesh_it->triangles.end(); tri_it++){
 //       y = (*tri_it->cent)(1);
 //       eps = slope * (y - b) + a ;
-//       sigma = mesh_it->mat.sig(eps) ;
+//       sigma = mesh_it->mat->sig(eps) ;
 //       dist = y - b;
 //       force = tri_it->area * sigma;
 //       F += force;
@@ -274,7 +290,7 @@ Real moment( supermesh &s, Real a, Real b, Real slope){
 //      Real eps2 = slope * (dist-b) + a;
 //      if (dist>0  ) 
 //      cout << "ASDASDASDASDAS " << dist <<" " << y << " "<< (-1*a/slope + b)  <<endl;
-      sigma = mesh_it->mat.sig(eps) ;
+      sigma = mesh_it->mat->sig(eps) ;
       M += tri_it->area * sigma * dist;
     }
   }
@@ -397,7 +413,7 @@ void stress_vtk(supermesh &s, Real a, Real b, Real slope, char *lolchar ){
     i=0;
     for (tri_it = mesh_it->triangles.begin(); 
          tri_it!=mesh_it->triangles.end(); tri_it++, i++){
-      sigv.push_back( mesh_it->mat.sig(epsv[i]) );
+      sigv.push_back( mesh_it->mat->sig(epsv[i]) );
     }
     lulisig.push_back(project2nodes(*mesh_it,sigv));
     lulieps.push_back(project2nodes(*mesh_it,epsv));
@@ -420,7 +436,7 @@ void sample_materials(supermesh &s, Real st, Real en, Real div, char *ofilename)
     sig.clear();
     sprintf(fn, "%s_mat%02d.txt",ofilename, i);
     for (unsigned int i=0; i<eps.size();i++)
-      sig.push_back(  it->mat.sig(eps[i]) );
+      sig.push_back(  it->mat->sig(eps[i]) );
     numtk::output_gp(eps,sig,fn);
   }
 
@@ -482,8 +498,8 @@ vector<vector<Real> > interaction(supermesh &s, unsigned int ndiv,
       (*tri_it->cent)(1) < ex[0] ? ex[0]=(*tri_it->cent)(1) : 0;
       (*tri_it->cent)(1) > ex[1] ? ex[1]=(*tri_it->cent)(1) : 0;
     }
-    ep[0] = min(mesh_it->mat.epsult[0],mesh_it->mat.epsult[1]) ;
-    ep[1] = max(mesh_it->mat.epsult[0],mesh_it->mat.epsult[1]) ;
+    ep[0] = min(mesh_it->mat->epsult[0],mesh_it->mat->epsult[1]) ;
+    ep[1] = max(mesh_it->mat->epsult[0],mesh_it->mat->epsult[1]) ;
     
     Point a(ex[0],ep[0]);
     Point b(ex[1],ep[0]);
@@ -780,7 +796,7 @@ void plot_y_vs_sig( supermesh &s, Real a, Real b, Real slope, string lolchar ){
          tri_it!=mesh_it->triangles.end(); tri_it++){
       y.push_back( (*tri_it->cent)(1) );
       epsv.push_back(  slope* ( y.back() - b) + a );
-      sigv.push_back( mesh_it->mat.sig(epsv.back()) );
+      sigv.push_back( mesh_it->mat->sig(epsv.back()) );
 //      cout << y.back() << " " << epsv.back() << " " << sigv.back() << endl;
     }
   }
@@ -814,14 +830,14 @@ void lolfun( supermesh &s, Real aa, Real bb, Real slope, char *lolchar ){
   //   mesh_it->init_node2tri();
 
 
-//  std::cout << s.meshes.front().mat.sig(0.00001) << std::endl;
+//  std::cout << s.meshes.front().mat->sig(0.00001) << std::endl;
   
 #if 0
   std::vector<Real> sig, eps;
 
   eps = numtk::range(-4e-2,4e-2,1000);
   for (unsigned int i=0; i<eps.size();i++)
-    sig.push_back(  s.meshes.front().mat.sig(eps[i]) );
+    sig.push_back(  s.meshes.front().mat->sig(eps[i]) );
 
   numtk::output_gp(eps,sig,"lolfile.txt");
   node a(0,2);
@@ -841,9 +857,9 @@ void lolfun( supermesh &s, Real aa, Real bb, Real slope, char *lolchar ){
          tri_it!=mesh_it->triangles.end(); tri_it++){
 
       epsv.push_back(  slope* ( (*(*tri_it).cent)(1) - bb) +aa);
-//      dum2 = m.mat.sig( a* ( (*(*tri_it).cent)(1) - b) );
+//      dum2 = m.mat->sig( a* ( (*(*tri_it).cent)(1) - b) );
 //    dum = 0.001;
-//    cout << m.mat.description << endl;
+//    cout << m.mat->description << endl;
 //      result.push_back(dum2);
 //    cout<< result.back() << endl;
     }
@@ -852,7 +868,7 @@ void lolfun( supermesh &s, Real aa, Real bb, Real slope, char *lolchar ){
          tri_it!=mesh_it->triangles.end(); tri_it++, i++){
 
 
-      sigv.push_back( mesh_it->mat.sig(epsv[i]) );
+      sigv.push_back( mesh_it->mat->sig(epsv[i]) );
       F+=tri_it->area*sigv.back();
 
     }
@@ -902,9 +918,9 @@ std::vector<Real> lol2(mesh &m, Real a, Real b){
   std::vector<Real> result;
   Real dum;
   for (tri_it = m.triangles.begin(); tri_it!=m.triangles.end(); tri_it++){
-    dum = m.mat.sig( a* ( (*(*tri_it).cent)(1) - b) );
+    dum = m.mat->sig( a* ( (*(*tri_it).cent)(1) - b) );
 //    dum = 0.001;
-//    cout << m.mat.description << endl;
+//    cout << m.mat->description << endl;
     result.push_back(dum);
 //    cout<< result.back() << endl;
   }
