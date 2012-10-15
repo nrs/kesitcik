@@ -23,8 +23,8 @@ int main(int argc, char** argv) {
   //                  3,8,465,
   //                  2,8,250);
 //  double_rein_rect(s,300,500, 5,8,80,4,8,420);
-  single_rein_rect(s,300,500,5,8,80);
-//  duck_section(s);
+//  single_rein_rect(s,300,500,5,8,80);
+  duck_section(s);
   interaction(s,500, "dck");
   gl_window_supermesh(s);
 
@@ -42,20 +42,8 @@ int main(int argc, char** argv) {
 
 //  gl_window_supermesh(*s);
 
-#if 0
-  unsigned int niter = 0;
-  Real x[3] = {0.000,-0.00001,-0.00005}; Real fx[2],pivot = 3.5e-5;
-  while (true){
-    cout << niter++ << " " << x[2] <<endl;
 
-    x[0] = x[1]; x[1] = x[2];
-    fx[0]  = normal_force(s,pivot, 250, x[0]);
-    fx[1]  = normal_force(s,pivot, 250, x[1]);
-    x[2] = x[1] - fx[1] * (x[1] - x[0])/ (fx[1]-fx[0]);
 
-    if (fabs(fx[1] - 0) < 1e-4 || niter > 10) break;
-  }
-#endif
 
   return 0;
 
@@ -74,3 +62,18 @@ void gl_window_supermesh(supermesh &s){
   glutMaster->CallGlutMainLoop();
 
 }
+
+
+
+  // unsigned int niter = 0;
+  // Real x[3] = {0.000,-0.00001,-0.00005}; Real fx[2],pivot = 3.5e-5;
+  // while (true){
+  //   cout << niter++ << " " << x[2] <<endl;
+
+  //   x[0] = x[1]; x[1] = x[2];
+  //   fx[0]  = normal_force(s,pivot, 250, x[0]);
+  //   fx[1]  = normal_force(s,pivot, 250, x[1]);
+  //   x[2] = x[1] - fx[1] * (x[1] - x[0])/ (fx[1]-fx[0]);
+
+  //   if (fabs(fx[1] - 0) < 1e-4 || niter > 10) break;
+  // }
