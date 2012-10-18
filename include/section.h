@@ -39,6 +39,9 @@ vector<Real> project2nodes( mesh &m, std::vector<Real> &vec);
 vector<vector<Real> > interaction(supermesh &s, unsigned int ndiv, 
                                   char *ofilename, bool plotothers=false);
 
+void m_vs_phi(supermesh &s, unsigned int ndiv, Real N, 
+              char *ofilename, bool plotothers=false);
+
 void plot_y_vs_sig( supermesh &s, Real a, Real b, Real slope, string lolchar);
 
 

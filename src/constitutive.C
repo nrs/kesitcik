@@ -17,7 +17,7 @@ namespace constitutive{
 
 
   Real concrete1::sig(Real eps){
-    if (eps < epsult[0]-TOLERANCE || eps > epsult[1]+TOLERANCE){
+    if (eps < epsulttol[0] || eps > epsulttol[1]){
       return 0.;
     }
     Real result;
@@ -34,6 +34,7 @@ namespace constitutive{
 
   concrete1::concrete1(){
     init(16,2e-3,-0.003, 0.003);
+
 //    init(20,2e-3,-3.5e-3, 1e-3);
   }
 
@@ -47,6 +48,8 @@ namespace constitutive{
     epsult[0] = par[2];
     epsult[1] = par[3];
     description="Concrete 1";
+    epsulttol[0] = epsult[0]-TOLERANCE; 
+    epsulttol[1] = epsult[1]+TOLERANCE;
   }
 
 
@@ -57,7 +60,7 @@ namespace constitutive{
 
   Real steel1::sig(Real eps){
 //    if (eps > par[2]) throw 0;
-    if (eps < epsult[0]-TOLERANCE || eps > epsult[1]+TOLERANCE)
+    if (eps < epsulttol[0] || eps > epsulttol[1])
       return 0.;
     Real result;
     if (eps < 0){
@@ -96,6 +99,8 @@ namespace constitutive{
     epsult[0] = eps_u1; // pos ultimate
     epsult[1] = eps_u2; // neg ultimate
     description = "Steel 1";
+    epsulttol[0] = epsult[0]-TOLERANCE; 
+    epsulttol[1] = epsult[1]+TOLERANCE;
   }
 
 }

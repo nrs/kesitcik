@@ -76,7 +76,7 @@ run: $(target)
 	@echo "***************************************************************"
 
 edit:
-	emacs $(kesit_srcfiles)  $(kesit_includefiles)&
+	emacs $(kesit_srcfiles) $(kesit_includefiles)&
 trolo:
 	@echo -e "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
 

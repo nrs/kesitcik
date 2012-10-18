@@ -17,7 +17,7 @@ objects		:= $(patsubst %.C, %.$(obj-suffix), $(srcfiles))
 ###############################################################################
 # Target:
 #
-target 	   := ex1
+target 	   := ex4
 
 
 all:: $(target)

@@ -4,7 +4,6 @@ KESIT_DIR = ../../
 include $(KESIT_DIR)/Make.common
 
 
-#
 # source files
 srcfiles 	:= $(wildcard *.C)  
 
@@ -37,7 +36,7 @@ $(target): $(objects) $(includefiles)
 	$(KESIT_CC)  $(KESIT_INCLUDES) $(KESIT_CXXFLAGS) -c $< -o $@
 # Useful rules.
 clean:
-	@rm -f $(objects) ./src/*~ *~ .depend
+	@rm -f $(objects) ./src/*~ *~ .depend $(target)
 
 
 clobber:
@@ -63,9 +62,10 @@ run: $(target)
 	@echo "***************************************************************"
 
 edit:
-	emacs $(srcfiles)  $(includefiles)&
+	emacs $(local_srcfiles)  $(local_includefiles)&
+
 trolo:
 	@echo -e "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
 
-gnuplot:
-	gnuplot -e "plot 'interaction.txt' using 1:2 w l" -p
+plot:
+	gnuplot plot.gp -p

@@ -313,15 +313,16 @@ namespace numtk{
 vector<Real> root_bisect_force(supermesh &s, Real a, Real b,Real c, Real d, Real force ){
   Real lo = min(c,d);
   Real up = max(c,d);
-  vector<Real> initial = numtk::range(lo, up,100);
+  vector<Real> initial = numtk::range(lo, up,20);
   vector<Real> result;
   const Real mytolerance = 1e-10;
   const unsigned int iterlim = 100; 
 
   for (unsigned int i = 0; i<initial.size()-1; i++){
+//    cout << a <<" "<< b << " " << initial[i]<<" "<<normal_force(s,a,b,initial[i  ]) << endl;
     if ( numtk::sign(normal_force(s,a,b,initial[i  ])-force)!=
          numtk::sign(normal_force(s,a,b,initial[i+1])-force) ){
-
+      
       Real x=initial[i],z,zold,y=initial[i+1];
       z = zold = (x+y)/2;
       unsigned int niter = 0;
@@ -333,7 +334,7 @@ vector<Real> root_bisect_force(supermesh &s, Real a, Real b,Real c, Real d, Real
         z = (x+y)/2;
 
         if (fabs((z-zold)/z) < mytolerance){
-          cout << "#iter = " << niter << " " << z << endl;
+//          cout << "#iter = " << niter << " " << z << endl;
           result.push_back(z); break;
         }
         zold=z;
@@ -441,6 +442,407 @@ void sample_materials(supermesh &s, Real st, Real en, Real div, char *ofilename)
   }
 
 }
+
+
+
+compoundInterval get_slope_range(Point p, supermesh &s)
+{
+  list<mesh>::iterator mesh_it;
+
+  compoundInterval all;
+
+  for (mesh_it=s.meshes.begin(); mesh_it!=s.meshes.end(); mesh_it++){
+    if (mesh_it->mat == NULL){
+      cerr<< "Input still has undefined materials." << endl;
+      return all;
+    }
+  }
+  if (s.meshes.size()==0){
+    cerr<< "No meshes defined in the input." << endl;
+    return all;
+  }
+
+  unsigned int i;
+
+  std::list<node>::iterator node_it;
+  std::list<triangle>::iterator tri_it;
+
+  //pivot points
+  vector<vector<Point> > pivots;
+
+  // the intervals must be either all negative or all positive.
+  // pivsign holds that information
+  vector<vector<bool> >pivsign;
+
+  // allowable and prohibited intervals
+  // represented by a line  between two points
+  compoundInterval pro;
+
+  Real ex[2],ep[2];
+
+  i=0;
+  for (mesh_it = s.meshes.begin(); mesh_it != s.meshes.end(); mesh_it++,i++){
+    vector<Point> dum1;
+    pivots.push_back(vector<Point>());
+    pivsign.push_back(vector<bool>());
+
+    ex[0] = ex[1] = (*mesh_it->triangles.begin()->cent)(1);
+    for (tri_it = mesh_it->triangles.begin(); 
+         tri_it!= mesh_it->triangles.end(); tri_it++){
+      (*tri_it->cent)(1) < ex[0] ? ex[0]=(*tri_it->cent)(1) : 0;
+      (*tri_it->cent)(1) > ex[1] ? ex[1]=(*tri_it->cent)(1) : 0;
+    }
+    ep[0] = min(mesh_it->mat->epsult[0],mesh_it->mat->epsult[1]) ;
+    ep[1] = max(mesh_it->mat->epsult[0],mesh_it->mat->epsult[1]) ;
+    
+    Point a(ex[0],ep[0]);
+    Point b(ex[1],ep[0]);
+    Point c(ex[0],ep[1]);
+    Point d(ex[1],ep[1]);
+
+    pivots.back().push_back(a);
+    pivots.back().push_back(b);
+    pivots.back().push_back(c);
+    pivots.back().push_back(d);
+
+    pivsign.back().push_back(1);
+    pivsign.back().push_back(0);
+    pivsign.back().push_back(0);
+    pivsign.back().push_back(1);
+    
+  }
+
+
+  vector<compoundInterval> dum;
+  for (unsigned int j = 0; j < pivots.size(); j++){
+    dum.push_back(compoundInterval());
+    for (unsigned int m = 0; m < 2; m++){
+      Real l,u;
+      l = numtk::slope(p,pivots[j][m]);
+      u = numtk::slope(p,pivots[j][m+2]);
+//      cout <<i<< ": A " << l << " " << u <<endl;
+      if ((numtk::isnan(u) || numtk::isinf(u) || 
+           numtk::isnan(l) || numtk::isinf(l)))
+        continue;
+      dum.back()+=interval(l,u);
+
+    }
+//    cout << endl;
+  }
+  if (dum.size() != 0){
+    compoundInterval lol = dum[0];
+    for (unsigned int q = 0; q < dum.size(); q++){
+//          cout << i << " " << q << "  "<< dum[q] << endl;
+      lol = lol.intersection(dum[q]);
+//          lol +=(dum[q]);
+    } 
+    all = lol;
+  }
+
+  vector<compoundInterval> dum2;
+
+  for (unsigned int j = 0; j < pivots.size(); j++){
+    dum2.push_back(compoundInterval());
+    for (unsigned int m = 0; m < 2; m++){
+      Real l,u;
+      l = numtk::slope(p,pivots[j][m*2]);
+      u = numtk::slope(p,pivots[j][m*2+1]);
+
+      if (numtk::isnan(u) && numtk::isnan(l)) continue;
+      if (numtk::isinf(u) && numtk::isinf(l)) continue;
+//      cout <<i<< ": U " << l << " " << u <<endl;
+        
+      if (numtk::isinf(l)){
+        bool dumb = numtk::isposit(pivots[j][m*2](0)-p(0)) *
+          !numtk::isposit(u);
+        all.subtract_infinity(u,!dumb);
+        continue;
+      }
+      if (numtk::isinf(u)){
+        bool dumb = numtk::isposit(pivots[j][m*2+1](0)-p(0))*
+          !numtk::isposit(l);
+        all.subtract_infinity(l,!dumb);
+        continue;
+      }
+      // if (numtk::isnan(l)){
+      //   all.subtract_infinity(0,!pivsign[i][k]);
+      //   continue;
+      // }
+      // if (numtk::isnan(u)){
+      //   all.subtract_infinity(0,!pivsign[i][k]);
+      //   continue;
+      // }
+      all-=interval(u,l);
+    }
+  }
+  
+  return all;
+}
+
+
+
+
+void m_vs_phi(supermesh &s, unsigned int ndiv, Real N,
+              char *ofilename, bool plotothers)
+{
+  vector<vector<Real> > result;
+  list<mesh>::iterator mesh_it;
+  char dumchar[1024];
+
+//  if (plotothers) sample_materials(s,-5e-3,5e-3,1000,ofilename);
+
+  for (mesh_it=s.meshes.begin(); mesh_it!=s.meshes.end(); mesh_it++){
+    if (mesh_it->mat == NULL){
+      cerr<< "Input still has undefined materials." << endl;
+      return;
+    }
+  }
+  if (s.meshes.size()==0){
+    cerr<< "No meshes defined in the input." << endl;
+    return;
+  }
+
+  unsigned int i;
+
+  std::list<node>::iterator node_it;
+  std::list<triangle>::iterator tri_it;
+
+  //pivot points
+  vector<vector<Point> > pivots;
+
+  //The vector that holds the solution, namely:
+  vector<vector<Real> > pivslopes;
+
+  // the intervals must be either all negative or all positive.
+  // pivsign holds that information
+  vector<vector<bool> >pivsign;
+
+  // allowable and prohibited intervals
+  // represented by a line  between two points
+  vector<vector<compoundInterval> > all;
+  vector<vector<compoundInterval> > pro;
+
+  // pivot compound intervals:
+  vector<vector<compoundInterval> >pivint;
+
+
+  Real ex[2],ep[2];
+
+  i=0;
+  for (mesh_it = s.meshes.begin(); mesh_it != s.meshes.end(); mesh_it++,i++){
+    vector<Point> dum1;
+    pivots.push_back(vector<Point>());
+    pivsign.push_back(vector<bool>());
+
+    ex[0] = ex[1] = (*mesh_it->triangles.begin()->cent)(1);
+    for (tri_it = mesh_it->triangles.begin(); 
+         tri_it!= mesh_it->triangles.end(); tri_it++){
+      (*tri_it->cent)(1) < ex[0] ? ex[0]=(*tri_it->cent)(1) : 0;
+      (*tri_it->cent)(1) > ex[1] ? ex[1]=(*tri_it->cent)(1) : 0;
+    }
+    ep[0] = min(mesh_it->mat->epsult[0],mesh_it->mat->epsult[1]) ;
+    ep[1] = max(mesh_it->mat->epsult[0],mesh_it->mat->epsult[1]) ;
+    
+    Point a(ex[0],ep[0]);
+    Point b(ex[1],ep[0]);
+    Point c(ex[0],ep[1]);
+    Point d(ex[1],ep[1]);
+
+    pivots.back().push_back(a);
+    pivots.back().push_back(b);
+    pivots.back().push_back(c);
+    pivots.back().push_back(d);
+
+    pivsign.back().push_back(1);
+    pivsign.back().push_back(0);
+    pivsign.back().push_back(0);
+    pivsign.back().push_back(1);
+
+    pivint.push_back(vector<compoundInterval>());
+    all.push_back(vector<compoundInterval>());
+    pro.push_back(vector<compoundInterval>());
+
+    // expand the vectors
+    for (unsigned int k = 0; k < 4; k++){
+      pivint.back().push_back(compoundInterval());
+      all.back().push_back(compoundInterval());
+      pro.back().push_back(compoundInterval());
+    }
+#if 0
+    Real l,u; //lower, upper
+    for (unsigned int k = 0; k < 4; k++){
+      for (unsigned int m = 0; m < 2; m++){
+        l = numtk::slope(pivots.back()[k],pivots.back()[m]);
+        u = numtk::slope(pivots.back()[k],pivots.back()[m+2]);
+        if (numtk::isnan(u) || numtk::isinf(u) || numtk::isnan(l) || numtk::isinf(l))
+          continue;
+        all.back()[k]+=interval(l,u);
+      }                 
+        //   all.back()[k]+=;
+        // interval(numtk::slope(pivots.back()[k],pivots.back()[1] ),
+        //          numtk::slope(pivots.back()[k],pivots.back()[3] ));
+    }
+
+    for (unsigned int k = 0; k < 4; k++){
+      pro.back()[k]-=
+        interval(numtk::slope(pivots.back()[k],pivots.back()[0] ),
+                 numtk::slope(pivots.back()[k],pivots.back()[1] ));
+      pro.back()[k]-=
+        interval(numtk::slope(pivots.back()[k],pivots.back()[2] ),
+                 numtk::slope(pivots.back()[k],pivots.back()[3] ));
+    }
+#endif
+
+    
+  }
+#if 0
+  for (unsigned int i = 0; i < pivots.size(); i++){
+    for (unsigned int k = 0; k < 4; k++){ // loop the points
+      vector<compoundInterval> dum;
+      for (unsigned int j = 0; j < pivots.size(); j++){
+        dum.push_back(compoundInterval());
+        for (unsigned int m = 0; m < 2; m++){
+          Real l,u;
+          l = numtk::slope(pivots[i][k],pivots[j][m]);
+          u = numtk::slope(pivots[i][k],pivots[j][m+2]);
+          cout <<i<< ": A " << l << " " << u <<endl;
+          if ((numtk::isnan(u) || numtk::isinf(u) || 
+                numtk::isnan(l) || numtk::isinf(l)))
+            continue;
+          dum.back()+=interval(l,u);
+
+        }
+        cout << endl;
+      }
+      if (dum.size() != 0){
+        compoundInterval lol = dum[0];
+        for (unsigned int q = 0; q < dum.size(); q++){
+//          cout << i << " " << q << "  "<< dum[q] << endl;
+          lol = lol.intersection(dum[q]);
+//          lol +=(dum[q]);
+        } 
+        all[i][k] = lol;
+      }else continue;
+
+      vector<compoundInterval> dum2;
+
+      for (unsigned int j = 0; j < pivots.size(); j++){
+        dum2.push_back(compoundInterval());
+        for (unsigned int m = 0; m < 2; m++){
+          Real l,u;
+          l = numtk::slope(pivots[i][k],pivots[j][m*2]);
+          u = numtk::slope(pivots[i][k],pivots[j][m*2+1]);
+
+          if (numtk::isnan(u) && numtk::isnan(l)) continue;
+          if (numtk::isinf(u) && numtk::isinf(l)) continue;
+          cout <<i<< ": U " << l << " " << u <<endl;
+        
+          if (numtk::isinf(l)){
+            bool dumb = numtk::isposit(pivots[j][m*2](0)-pivots[i][k](0)) *
+              !numtk::isposit(u);
+            all[i][k].subtract_infinity(u,!dumb);
+            continue;
+          }
+          if (numtk::isinf(u)){
+            bool dumb = numtk::isposit(pivots[j][m*2+1](0)-pivots[i][k](0))*
+              !numtk::isposit(l);
+            all[i][k].subtract_infinity(l,!dumb);
+            continue;
+          }
+          if (numtk::isnan(l)){
+            all[i][k].subtract_infinity(0,!pivsign[i][k]);
+            continue;
+          }
+          if (numtk::isnan(u)){
+            all[i][k].subtract_infinity(0,!pivsign[i][k]);
+            continue;
+          }
+        
+ 
+          all[i][k]-=interval(u,l);
+          // cout <<i<< ": A " << l << " " << u <<endl;
+          // if (!(numtk::isnan(u) || numtk::isinf(u) || 
+          //       numtk::isnan(l) || numtk::isinf(l)))
+          // dum2.back()+=interval(l,u);
+        }
+      }
+    }
+  }
+
+
+  unsigned int j = 0;
+  for (unsigned int i=0; i < all.size(); i++)
+    for (unsigned int k=0; k < all[i].size(); k++)
+      j+=all[i][k].size();
+  if (j==0) {
+    cerr<< "No solutions possible for this combination." << endl;
+    return;
+  }
+
+
+  for (unsigned int i = 0; i < pivots.size(); i++){
+    for (unsigned int j = 0; j < pivots[i].size(); j++){
+    cout << i << "("<< all[i][j].size() <<") ("
+         <<pivots[i][j](0)<<","<<pivots[i][j](1)<< ") ** " << all[i][j];
+    cout << endl;
+    }
+  }
+#endif
+  for (unsigned int i = 0; i < pivots.size(); i++){
+    for (unsigned int j = 0; j < pivots[i].size(); j++){
+    cout << i << "("<< all[i][j].size() <<") ("
+         <<pivots[i][j](0)<<","<<pivots[i][j](1)<< ") ** "<< endl;
+    }
+  }
+
+  ofstream of2; 
+  sprintf(dumchar, "%s_mphi.txt",ofilename);
+  of2.open(dumchar);
+  cout << "Writing " << dumchar << "." << endl;
+
+
+  for (unsigned int i = 0; i < pivots.size(); i++){
+    for (unsigned int j = 0; j < 2; j++){
+      
+      vector<Real> strains = numtk::range(pivots[i][j](1), pivots[i][j+2](1),ndiv);
+      cout << " LOL " << pivots[i][j](1) << "  " <<  pivots[i][j+2](1) << endl;
+      for (unsigned int k = 0; k < strains.size(); k++){
+//        Point p(pivots[i][j](0),strains[k]);
+        compoundInterval inter = get_slope_range( Point(pivots[i][j](0),strains[k]) ,s );
+//        cout << pivots[i][j](0)<<" "<<  strains[k]<< " "<< inter << endl;
+
+        for (unsigned int l=0; l<inter.size(); l++){
+          vector<Real> root = 
+            root_bisect_force(s,strains[k], pivots[i][j](0), inter[l].s, inter[l].e, N);
+          for (unsigned int q=0; q<root.size(); q++){
+            of2 << root[q] << "  " << 
+              moment(s,strains[k], pivots[i][j](0),root[q]) << endl;
+          }
+
+//          cout << pivots[i][j](0)<<" "<<  strains[k]<< " "<< inter << endl;
+
+//        cout << get_slope_range( Point(pivots[i][j](0),strains[k]) ,s ) << endl;
+
+        }
+        
+      }
+    }
+  }
+  of2.close();
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
 
 
 vector<vector<Real> > interaction(supermesh &s, unsigned int ndiv, 
@@ -698,7 +1100,7 @@ vector<vector<Real> > interaction(supermesh &s, unsigned int ndiv,
       for (unsigned int j=0 ; j<slopes.size(); j++){
         moments.push_back( moment(s,pivots[i](1),pivots[i](0),slopes[j])/1e6 );
         forces.push_back( normal_force(s,pivots[i](1),pivots[i](0),slopes[j])/1e3 );
-        of2 << moments.back() << " " << forces.back() << endl;
+        of2 << moments.back() << " " << forces.back() << " " << slopes[j] << endl;
       }
       of2 << endl;
 //      sprintf(dumchar, "a%02d%02d.txt",i,k);
