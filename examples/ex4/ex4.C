@@ -33,12 +33,16 @@ int main(int argc, char** argv) {
 
   supermesh s;
   single_rein_rect(s,300,500,3,8,80);
-  m_vs_phi(s,500,0., "l01",true);
-  m_vs_phi(s,500,-200e3, "l02",true);
-  m_vs_phi(s,500,-400e3, "l03",true);
-  m_vs_phi(s,500,-600e3, "l04",true);
-  m_vs_phi(s,500,-800e3, "l05",true);
-  m_vs_phi(s,500,-1000e3, "l06",true);
+
+  delete s.meshes.front().mat;
+  s.meshes.front().mat = new constitutive::concrete2;
+
+  m_vs_phi(s,200,0., "l01",true);
+  m_vs_phi(s,200,-200e3, "l02",true);
+  m_vs_phi(s,200,-400e3, "l03",true);
+  m_vs_phi(s,200,-600e3, "l04",true);
+  m_vs_phi(s,200,-800e3, "l05",true);
+  m_vs_phi(s,200,-1000e3, "l06",true);
 //  interaction(s,500, "lol",true);
 
 

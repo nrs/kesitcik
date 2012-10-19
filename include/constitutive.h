@@ -29,9 +29,9 @@ namespace constitutive{
     }
   };
 
+// a concrete class that does not allow cracking: \eps_ultimate=\eps_cracking
   class concrete1: public material{
   public:
-//    using material::sig;
     Real sig(Real eps);
     concrete1(Real a, Real b, Real c, Real d);
     concrete1();
@@ -39,9 +39,19 @@ namespace constitutive{
     void init(Real f_ck, Real eps_0, Real eps_cu1, Real eps_cu2);
   };
 
+// a concrete class that allows cracking: \eps_ultimate>\eps_cracking
+  class concrete2: public material{
+  public:
+    Real sig(Real eps);
+    concrete2(Real a, Real b, Real c, Real d, Real e, Real f);
+    concrete2();
+  private:
+    void init(Real f_ck, Real eps_0, Real eps_cr1, Real eps_cr2, 
+              Real eps_cu1, Real eps_cu2);
+  };
+
   class steel1: public material{
   public:
-//    using material::sig;
     Real sig(Real eps);
     steel1(Real a, Real b, Real c, Real d, Real e, Real f);
     steel1();

@@ -11,9 +11,9 @@ namespace constitutive{
 
 
 
-//////////////////////
-// Concrete Follows //
-//////////////////////
+///////////////////////
+// Concrete1 Follows //
+///////////////////////
 
 
   Real concrete1::sig(Real eps){
@@ -48,6 +48,52 @@ namespace constitutive{
     epsult[0] = par[2];
     epsult[1] = par[3];
     description="Concrete 1";
+    epsulttol[0] = epsult[0]-TOLERANCE; 
+    epsulttol[1] = epsult[1]+TOLERANCE;
+  }
+
+
+///////////////////////
+// Concrete2 Follows //
+///////////////////////
+
+
+  Real concrete2::sig(Real eps){
+    if (eps < par[2] || eps > par[3]){
+      return 0.;
+    }
+    Real result;
+    if (eps < 0){
+      result = -1*par[0] * ((2*-1*eps/par[1]) - (eps/par[1])*(eps/par[1])) ;
+    }else{
+      result = 1.6 * ((2*eps/par[1]) - (eps/par[1])*(eps/par[1])) ;
+    }
+    return result;
+  }
+
+  concrete2::concrete2(Real f_ck, Real eps_0, Real eps_cr1, Real eps_cr2, 
+                       Real eps_cu1, Real eps_cu2)
+  {
+    init(f_ck, eps_0, eps_cr1, eps_cr2, eps_cu1, eps_cu2);
+
+  }
+
+  concrete2::concrete2(){
+    init(16,2e-3,-0.003, 0.003,-0.003,0.006);
+  }
+
+  void concrete2::init(Real f_ck, Real eps_0, Real eps_cr1, Real eps_cr2, 
+                       Real eps_cu1, Real eps_cu2){
+    par = std::vector<Real> (6);
+    par[0]=(Real) f_ck;
+    par[1]=(Real) eps_0;
+    par[2]=(Real) -1*fabs(eps_cr1); // compresssion cracking
+    par[3]=(Real)    fabs(eps_cr2); // tension cracking
+    par[4] = (Real) -1*fabs(eps_cu1); // compression ultimate
+    par[5] = (Real)    fabs(eps_cu2); // tension ultimate
+    epsult[0] = par[4];
+    epsult[1] = par[5];
+    description="Concrete 2";
     epsulttol[0] = epsult[0]-TOLERANCE; 
     epsulttol[1] = epsult[1]+TOLERANCE;
   }
