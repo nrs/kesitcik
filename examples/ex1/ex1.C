@@ -11,6 +11,9 @@ MeshWindow  * firstWindow = 0;
 
 using namespace std;
 void gl_window_supermesh(supermesh &s);
+void duck_section(supermesh &s);
+
+
 
 
 int main(int argc, char** argv) {
@@ -39,12 +42,6 @@ int main(int argc, char** argv) {
   }
 #endif
 
-
-//  gl_window_supermesh(*s);
-
-
-
-
   return 0;
 
 }
@@ -64,16 +61,15 @@ void gl_window_supermesh(supermesh &s){
 }
 
 
+// unsigned int niter = 0;
+// Real x[3] = {0.000,-0.00001,-0.00005}; Real fx[2],pivot = 3.5e-5;
+// while (true){
+//   cout << niter++ << " " << x[2] <<endl;
 
-  // unsigned int niter = 0;
-  // Real x[3] = {0.000,-0.00001,-0.00005}; Real fx[2],pivot = 3.5e-5;
-  // while (true){
-  //   cout << niter++ << " " << x[2] <<endl;
+//   x[0] = x[1]; x[1] = x[2];
+//   fx[0]  = normal_force(s,pivot, 250, x[0]);
+//   fx[1]  = normal_force(s,pivot, 250, x[1]);
+//   x[2] = x[1] - fx[1] * (x[1] - x[0])/ (fx[1]-fx[0]);
 
-  //   x[0] = x[1]; x[1] = x[2];
-  //   fx[0]  = normal_force(s,pivot, 250, x[0]);
-  //   fx[1]  = normal_force(s,pivot, 250, x[1]);
-  //   x[2] = x[1] - fx[1] * (x[1] - x[0])/ (fx[1]-fx[0]);
-
-  //   if (fabs(fx[1] - 0) < 1e-4 || niter > 10) break;
-  // }
+//   if (fabs(fx[1] - 0) < 1e-4 || niter > 10) break;
+// }

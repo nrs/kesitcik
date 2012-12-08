@@ -2,203 +2,7 @@
 #include "interval.h"
 
 using namespace constitutive;
-void single_rein_rect(supermesh &s, Real width, Real height, 
-                 unsigned int nrein, Real rad, Real dprime)
-{
-  const int nsides=12;
 
-  Real side_clearance = width/3;
-
-  s.meshes = list<mesh> (2);
-
-  rectangular_section(s.meshes.front(),-1*width/2,width/2,height,0);
-  lateral_reinforcements(s.meshes.back(), nrein, dprime, width-side_clearance,rad,nsides);
-
-  s.meshes.front().subtract(s.meshes.back());
-
-// Triangulation  
-  s.meshes.front().triangulate_mesh(500);//50
-  s.meshes.back().triangulate_mesh(50);//5
-
-// Materials
-  // s.meshes.front().mat=auto_ptr<material>(new concrete1);
-  // s.meshes.back().mat=auto_ptr<material>(new steel1);
-  s.meshes.front().mat = new concrete1;
-  s.meshes.back().mat = new steel1;
-
-// Print info
-  s.meshes.front().print_info(); cout<<endl;
-  s.meshes.back().print_info();
-
-// Color
-  s.meshes.front().color_mesh(0,0,4);
-  s.meshes.back().color_mesh(0,0,1);
-  s.calc_cg();
-
-
-}
-
-
-void double_rein_rect(supermesh &s, Real width, Real height,
-                      unsigned int nrein1, Real rad1, Real dprime1,
-                      unsigned int nrein2, Real rad2, Real dprime2)
-// void double_rein_rect(supermesh &s, Real width, Real height,
-//                  unsigned int nrein, Real rad, Real dprime, Real dprpr)
-{
-  const int nsides=12;
-  Real side_clearance = width/3;
-  mesh dummy;
-  s.meshes = list<mesh> (2);
-
-  rectangular_section(s.meshes.front(),-1*width/2,width/2,height,0);
-  lateral_reinforcements(s.meshes.back(), nrein1, dprime1, 
-                         width-side_clearance,rad1,nsides);
-  lateral_reinforcements(dummy, nrein2, dprime2, 
-                         width-side_clearance,rad2,nsides);
-  
-  s.meshes.back().add ( dummy );
-
-  s.meshes.front().subtract(s.meshes.back());
-
-// Triangulation  
-  s.meshes.front().triangulate_mesh(500);//50
-  s.meshes.back().triangulate_mesh(50);//5
-
-// Materials
-  // s.meshes.front().mat = concrete1();
-  // s.meshes.back().mat = steel1();
-//  s.meshes.front().mat=auto_ptr<material>(new concrete1);
-//  s.meshes.back().mat=auto_ptr<material>(new steel1);
-  s.meshes.front().mat = new concrete1;
-  s.meshes.back().mat = new steel1;
-
-
-// Print info
-  s.meshes.front().print_info(); cout<<endl;
-  s.meshes.back().print_info();
-
-// Color
-  s.meshes.front().color_mesh(0,0,4);
-  s.meshes.back().color_mesh(0,0,1);
-  s.calc_cg();
-
-
-}
-void triple_rein_rect(supermesh &s, Real width, Real height,
-                      unsigned int nrein1, Real rad1, Real dprime1,
-                      unsigned int nrein2, Real rad2, Real dprime2,
-                      unsigned int nrein3, Real rad3, Real dprime3)
-{
-  const int nsides=12;
-  Real side_clearance = width/3;
-  mesh dummy;
-  s.meshes = list<mesh> (2);
-
-  rectangular_section(s.meshes.front(),-1*width/2,width/2,height,0);
-  lateral_reinforcements(s.meshes.back(), nrein1, dprime1, 
-                         width-side_clearance,rad1,nsides);
-  lateral_reinforcements(dummy, nrein2, dprime2, 
-                         width-side_clearance,rad2,nsides);
-  s.meshes.back().add ( dummy );
-  lateral_reinforcements(dummy, nrein3, dprime3,
-                         width-side_clearance,rad3,nsides);
-  s.meshes.back().add ( dummy );
-
-  s.meshes.front().subtract(s.meshes.back());
-
-// Triangulation  
-  s.meshes.front().triangulate_mesh(500);//50
-  s.meshes.back().triangulate_mesh(50);//5
-
-// Materials
-  s.meshes.front().mat = new concrete1;
-  s.meshes.back().mat = new steel1;
-//  s.meshes.front().mat=auto_ptr<material>(new concrete1);
-//  s.meshes.back().mat=auto_ptr<material>(new steel1);
-  // s.meshes.front().mat = concrete1();
-  // s.meshes.back().mat = steel1();
-
-// Print info
-  s.meshes.front().print_info(); cout<<endl;
-  s.meshes.back().print_info();
-
-// Color
-  s.meshes.front().color_mesh(0,0,4);
-  s.meshes.back().color_mesh(0,0,1);
-
-  s.calc_cg();
-
-}
-
-void lateral_reinforcements(mesh &m, unsigned int n, Real y, Real width, 
-                                  Real radius, unsigned int nsides)
-{
-  std::list<mesh> rein(n);
-  m.clear();
-//  mesh result;
-  std::list<mesh>::iterator mesh_it ;
-  unsigned int i;
-  Real center[2];
-
-  i=0;
-  for (mesh_it = rein.begin(); mesh_it != rein.end(); mesh_it++,i++){
-//    center[0]=-1*width/2 + (i+1)*width/(n+1) ;
-    center[0]=-1*width/2 + (i)*width/(n-1);
-    center[1]=y;
-    circular_section(*mesh_it,radius,center,nsides);
-
-  }
-
-  for (mesh_it = rein.begin(); mesh_it != rein.end(); mesh_it++){
-    m.add(*mesh_it);
-  }
-
-//  return mesh(result);
-}
-
-
-
-void duck_section(supermesh &s)
-{
-  mesh beak, eye;
-
-  s.meshes.clear();
-
-  s.meshes.push_back(mesh());
-  s.meshes.back().in_vtk_lines("duck/body.vtk");
-
-  eye.in_vtk_lines("duck/eye.vtk");
-  node cgeye(0,0);
-  for (list<node>::iterator it = eye.nodes.begin(); 
-       it != eye.nodes.end(); it++){
-    cgeye+=*it;
-  }
-  cgeye/=eye.nodes.size();
-
-  cout << cgeye << endl;
-  eye.innode.push_back(cgeye);
-  s.meshes.back().subtract(eye);
-  
-  beak.in_vtk_lines("duck/beak.vtk");
-  s.meshes.push_back(mesh());
-  s.meshes.back().add(eye);
-  s.meshes.back().add(beak);
-
-  s.meshes.back().triangulate_mesh(50);
-  s.meshes.front().triangulate_mesh(500);
-
-  s.meshes.back().color_mesh(0,0,1);
-  s.meshes.front().color_mesh(0,0,4);
-
-  s.meshes.front().mat = new concrete1;
-  s.meshes.back().mat = new steel1;
-//  s.meshes.front().mat=auto_ptr<material>(new concrete1);
-//  s.meshes.back().mat=auto_ptr<material>(new steel1);
-
-  // s.meshes.front().mat = concrete1();
-  // s.meshes.back().mat = steel1();
-
-}
 
 
 std::vector<Real> project2nodes( mesh &m, std::vector<Real> &vec){
@@ -796,6 +600,7 @@ void m_vs_phi(supermesh &s, unsigned int ndiv, Real N,
   }
 
   ofstream of2; 
+  of2 << "# Curvature, Moment" << endl;
   sprintf(dumchar, "%s_mphi.txt",ofilename);
   of2.open(dumchar);
   cout << "Writing " << dumchar << "." << endl;
@@ -815,8 +620,8 @@ void m_vs_phi(supermesh &s, unsigned int ndiv, Real N,
           vector<Real> root = 
             root_bisect_force(s,strains[k], pivots[i][j](0), inter[l].s, inter[l].e, N);
           for (unsigned int q=0; q<root.size(); q++){
-            of2 << root[q] << "  " << 
-              moment(s,strains[k], pivots[i][j](0),root[q]) << endl;
+            of2 << root[q]*1e6 << "  " << 
+              moment(s,strains[k], pivots[i][j](0),root[q])/1e6 << endl;
           }
 
 //          cout << pivots[i][j](0)<<" "<<  strains[k]<< " "<< inter << endl;
@@ -852,7 +657,7 @@ vector<vector<Real> > interaction(supermesh &s, unsigned int ndiv,
   list<mesh>::iterator mesh_it;
   char dumchar[1024];
 
-  if (plotothers) sample_materials(s,-5e-3,5e-3,1000,ofilename);
+  if (plotothers) sample_materials(s,-0.016,0.016,1000,ofilename);
 
   // for (mesh_it=s.meshes.begin(); mesh_it!=s.meshes.end(); mesh_it++){
   //   if (mesh_it->mat == NULL){
@@ -1070,6 +875,7 @@ vector<vector<Real> > interaction(supermesh &s, unsigned int ndiv,
   ofstream of2; 
   sprintf(dumchar, "%s_int.txt",ofilename);
   of2.open(dumchar);
+  of2 << "# Moment, Force, Curvature" << endl;
   cout << "Writing " << dumchar << "." << endl;
   for (unsigned int i=0 ; i<pivots.size(); i++){
 //    pivslopes.push_back(vector<Real>());

@@ -43,10 +43,12 @@ public:
 //  void add_mesh(std::list<mesh> &m);
   void draw_supermesh();
   void draw_mesh(mesh &m);
-  void draw_node(node &n, Real rad, int c);
-  void draw_node2(node &n, Real rad, int c);
+  void draw_node(node &n, Real rad);
+  void draw_node2(node &n, Real rad);
   
   void draw_line(line &l, int c);
+  void draw_crosshair(node &n, Real len, int c);
+
   void draw_triangle(triangle &t, int c);
 //   void CallBackReshapeFunc(int w, int h);   
 //   void CallBackIdleFunc(void);

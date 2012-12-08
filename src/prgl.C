@@ -117,7 +117,7 @@ void MeshWindow::CallBackMotionFunc(int x, int y)
   }
 }
 
-void MeshWindow::draw_node2(node &n, Real rad, int c){
+void MeshWindow::draw_node2(node &n, Real rad){
     glPushMatrix();
 //    SetColor(c);
     SetColor(n.color);
@@ -136,7 +136,7 @@ void MeshWindow::draw_node2(node &n, Real rad, int c){
 }
 
 
-void MeshWindow::draw_node(node &n, Real rad, int c){
+void MeshWindow::draw_node(node &n, Real rad){
 
     Real th,x,y;
     glPushMatrix();
@@ -174,6 +174,20 @@ void MeshWindow::draw_line(line &l, int c)
     glPopMatrix();
 
 }
+
+// void MeshWindow::draw_crosshair(node &n, Real len, int c)
+// {
+//     glPushMatrix();
+// //    glTranslatef((*l.nodes[1])(0),(*l.nodes[1])(1),0);
+//     SetColor(c);
+
+//     glBegin(GL_LINES);
+//     glVertex2f(n(0)-len,n(1)-len);
+
+//     glEnd();
+//     glPopMatrix();
+
+// }
 
 
 void MeshWindow::draw_triangle(triangle &t, int c)
@@ -265,6 +279,7 @@ void MeshWindow::draw_supermesh()
     draw_line(*line_it,0);
   }
 
+  draw_node2(glsupermesh->cg,5);
 }
 
 

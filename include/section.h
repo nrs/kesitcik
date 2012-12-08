@@ -7,24 +7,7 @@
 #include <vector>
 #include <ostream>
 
-void single_rein_rect(supermesh &s, Real width, Real height, 
-                 unsigned int nrein, Real rad, Real dprime);
 
-void double_rein_rect(supermesh &s, Real width, Real height,
-                      unsigned int nrein1, Real rad1, Real dprime1,
-                      unsigned int nrein2, Real rad2, Real dprime2);
-
-void triple_rein_rect(supermesh &s, Real width, Real height,
-                      unsigned int nrein1, Real rad1, Real dprime1,
-                      unsigned int nrein2, Real rad2, Real dprime2,
-                      unsigned int nrein3, Real rad3, Real dprime3);
-
-
-void duck_section(supermesh &s);
-
-void lateral_reinforcements(mesh &m, unsigned int n, 
-                            Real y, Real width, Real radius,
-                            unsigned int nsides);
 
 
 

@@ -17,7 +17,7 @@ objects		:= $(patsubst %.C, %.$(obj-suffix), $(srcfiles))
 ###############################################################################
 # Target:
 #
-target 	   := ex1
+target 	   := ex5
 
 
 all:: $(target)
@@ -36,13 +36,13 @@ $(target): $(objects) $(includefiles)
 	$(KESIT_CC)  $(KESIT_INCLUDES) $(KESIT_CXXFLAGS) -c $< -o $@
 # Useful rules.
 clean:
-	@rm -f $(objects) ./src/*~ *~ .depend $(target)
+	@rm -f $(objects)  *~ .depend $(target) lol*
 
 
 clobber:
 	@$(MAKE) clean
 	@rm -f $(target) out.gmv
-	rm *.vtk dck_* -f
+	rm *.vtk
 
 distclean:
 	@$(MAKE) clobber

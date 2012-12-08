@@ -12,11 +12,10 @@ MeshWindow  * firstWindow = 0;
 using namespace std;
 void gl_window_supermesh(supermesh &s);
 
+void single_rein_rect(supermesh &s, Real width, Real height, 
+                      unsigned int nrein, Real rad, Real dprime);
 
 int main(int argc, char** argv) {
-  
-
-
   supermesh s;
   // triple_rein_rect(s,300,500, 
   //                  3,8,35, 

@@ -17,7 +17,7 @@ objects		:= $(patsubst %.C, %.$(obj-suffix), $(srcfiles))
 ###############################################################################
 # Target:
 #
-target 	   := ex1
+target 	   := ex6
 
 
 all:: $(target)
@@ -42,7 +42,7 @@ clean:
 clobber:
 	@$(MAKE) clean
 	@rm -f $(target) out.gmv
-	rm *.vtk dck_* -f
+	rm *.vtk
 
 distclean:
 	@$(MAKE) clobber
