@@ -1,0 +1,15 @@
+rein_layer 180 70 26 5
+rein_layer 180 120 26 4
+rein_layer 900 570 22 7
+
+flange_width  1200
+beam_width 300
+beam_height 650
+flange_thickness 150
+concrete_str 50
+
+steel_sig_y 420
+steel_young 2e5
+steel_sig_ult 600
+steel_eps_ult 0.15
+steel_eps_sh 0.01

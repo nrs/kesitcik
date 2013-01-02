@@ -9,6 +9,7 @@
 
 
 
+void sample_materials(supermesh &s, Real st, Real en, Real div, char *ofilename);
 
 
 
