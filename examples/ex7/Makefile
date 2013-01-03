@@ -66,6 +66,11 @@ runall: $(target)
 	./$(target) i2.in
 	./$(target) i3.in
 
+runfine: $(target)
+	./$(target) i1.in fine
+	./$(target) i2.in fine
+	./$(target) i3.in fine
+
 edit:
 	emacs $(local_srcfiles)  $(local_includefiles)&
 

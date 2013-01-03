@@ -58,10 +58,15 @@ Real steel_sig_y = 420;
 Real steel_sig_ult = 600;
 Real steel_eps_ult = 0.15;
 Real steel_young = 2e5;
+
+Real max_element_area = 800;
+
+Real moment_cur_steps = 1000;
 //Real clear_cover = 70;
 
 bool reinforcement_defined = false;
 bool input_file = false;
+
 
 
 int main(int argc, char** argv) {
@@ -72,23 +77,33 @@ int main(int argc, char** argv) {
   }else{
     read_input(argv[1]);
   }
+  if (argv[2]){
+    if (strcmp("fine",argv[2])==0){
+      max_element_area = 200;
+      moment_cur_steps = 3000;
+      cout << "Fine options selected\n";
+    }
+  }
 // reinforcement diameter
   Real diameter = 28;
   // create the reinforcement array
-  if (!reinforcement_defined){
-    myrein.push_back(reinf(-110,50,diameter));
-    myrein.push_back(reinf(110 ,50,diameter));
-    myrein.push_back(reinf(0   ,50,diameter));
-    myrein.push_back(reinf(110 ,113,diameter));
-    myrein.push_back(reinf(-110,113,diameter));
-  }
+  // if (!reinforcement_defined){
+  //   myrein.push_back(reinf(-110,50,diameter));
+  //   myrein.push_back(reinf(110 ,50,diameter));
+  //   myrein.push_back(reinf(0   ,50,diameter));
+  //   myrein.push_back(reinf(110 ,113,diameter));
+  //   myrein.push_back(reinf(-110,113,diameter));
+  // }
 
   supermesh s;
   // create the t-section
   tsect_rein(s,beam_width,beam_height,flange_thickness,flange_width,myrein);
 
   // readjust the center of gravity as in the question
-  s.cg = node(0,270);
+//s.cg = node(0,75);
+//  s.cg = node(0,270);
+
+
   char *basename;
   char dummy[] = "lol";
 
@@ -98,7 +113,7 @@ int main(int argc, char** argv) {
     basename=dummy;
   }
 
-  m_vs_phi(s,1000,0., basename,true);
+  m_vs_phi(s,moment_cur_steps,0., basename,true);
 //  interaction(s,500, basename,true);
 //  sample_materials(s,0,0.16,1000,basename);
 //  sample_materials(s,-0.0037,0,1000,basename);
@@ -170,10 +185,20 @@ void read_input (char *path){
       } else if (tok == "steel_eps_ult"){
         if (!(iss >> a)){cout << "I/O Error\n"; exit(0);} 
         steel_eps_ult = a; break;
-      } else if (tok == "conrete_str"){
+      } else if (tok == "concrete_str"){
         if (!(iss >> a)){cout << "I/O Error\n"; exit(0);} 
-        concrete_str = a; break;
-      } // else if (tok == "clear_cover"){
+        concrete_str = a;
+        break;
+      } else if (tok == "steel_young"){
+        if (!(iss >> a)){cout << "I/O Error\n"; exit(0);} 
+        steel_young = a;
+        break;
+      } else {
+        cout << "Illegal parameter: " << tok << endl;
+        exit(0);
+      }
+
+      // else if (tok == "clear_cover"){
       //   if (!(iss >> a)){cout << "I/O Error\n"; exit(0);} 
       //   clear_cover = a; break;
       // } 
@@ -226,7 +251,7 @@ void tsect_rein(supermesh &s, Real width, Real height, Real a, Real b,
   s.meshes.front().subtract(s.meshes.back());
 
 // Triangulation  
-  s.meshes.front().triangulate_mesh(800);//50
+  s.meshes.front().triangulate_mesh(max_element_area);//50
   s.meshes.back().triangulate_mesh(20);//5
 
 // Materials
@@ -247,8 +272,12 @@ void tsect_rein(supermesh &s, Real width, Real height, Real a, Real b,
 // Color
   s.meshes.front().color_mesh(0,0,4);
   s.meshes.back().color_mesh(0,0,1);
-  s.calc_cg();
+//  s.calc_cg();
+  // Adjust center of gravity of the whole section to steel's:
+  s.cg = s.meshes.back().calc_cg();
+  
 
+  cout << "Center of gravity: " << s.cg<< endl;
 
 }
 
