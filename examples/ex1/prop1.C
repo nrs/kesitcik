@@ -1,4 +1,4 @@
-#include "pr1.h"
+#include "kesitcik/pr1.h"
 
 class concrete1: public material{
 public:
@@ -17,10 +17,8 @@ public:
   steel1();
 private:
   void init(Real f_ck, Real eps_0, Real eps_cu1, Real eps_cu2,
-            Real eps_u1, Real eps_u2);  
+            Real eps_u1, Real eps_u2);
 };
-
-
 
 void duck_section(supermesh &s)
 {
@@ -33,7 +31,7 @@ void duck_section(supermesh &s)
 
   eye.in_vtk_lines("duck/eye.vtk");
   node cgeye(0,0);
-  for (list<node>::iterator it = eye.nodes.begin(); 
+  for (list<node>::iterator it = eye.nodes.begin();
        it != eye.nodes.end(); it++){
     cgeye+=*it;
   }
@@ -42,7 +40,7 @@ void duck_section(supermesh &s)
   cout << cgeye << endl;
   eye.innode.push_back(cgeye);
   s.meshes.back().subtract(eye);
-  
+
   beak.in_vtk_lines("duck/beak.vtk");
   s.meshes.push_back(mesh());
   s.meshes.back().add(eye);
@@ -102,7 +100,7 @@ void concrete1::init(Real f_ck, Real eps_0, Real eps_cu1, Real eps_cu2){
   epsult[0] = par[2];
   epsult[1] = par[3];
   description="Concrete 1";
-  epsulttol[0] = epsult[0]-TOLERANCE; 
+  epsulttol[0] = epsult[0]-TOLERANCE;
   epsulttol[1] = epsult[1]+TOLERANCE;
 }
 
@@ -153,6 +151,6 @@ void steel1::init(Real f_ck, Real eps_0, Real eps_sy1, Real eps_sy2,
   epsult[0] = eps_u1; // pos ultimate
   epsult[1] = eps_u2; // neg ultimate
   description = "Steel 1";
-  epsulttol[0] = epsult[0]-TOLERANCE; 
+  epsulttol[0] = epsult[0]-TOLERANCE;
   epsulttol[1] = epsult[1]+TOLERANCE;
 }

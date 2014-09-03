@@ -1,10 +1,19 @@
-# The location of the mesh library
-KESIT_DIR = ../../
+# Sample makefile
+# The shared library and its headers which this example is
+# for should be able to be found by the linker and the compiler
 
-include $(KESIT_DIR)/Make.common
+CC = gcc
+CXX = g++
+CXXFLAGS = -g -DSELF_CHECK -O3 -Wno-write-strings -fPIC
+INCLUDES = -I/usr/X11R6/include/
+LIBS = -L/usr/X11R6/lib -lX11 -lXi -lXmu -lglut -lGL -lGLU
+
+#library as a shared object
+obj-suffix := o
 
 # source files
 srcfiles := $(wildcard *.C)
+includefiles := $(wildcard *.h)
 
 objects	:= $(patsubst %.C, %.$(obj-suffix), $(srcfiles))
 
@@ -20,13 +29,13 @@ all: $(target)
 $(target): $(objects) $(includefiles)
 #$(CXX)  $(INCLUDES) $(CXXFLAGS) $(objects) -c $<
 	@echo "Linking "$@"..."
-	$(KESIT_CXX) $(KESIT_CXXFLAGS) $(KESIT_LIBS) $(kesit_library) $(objects) -o $@
+	$(CXX) $(CXXFLAGS) $(LIBS) -lkesitcik $(objects) -o $@
 
 %.o: %.C
-	$(KESIT_CXX) $(KESIT_INCLUDES) $(KESIT_CXXFLAGS) -c $< -o $@
+	$(CXX) $(INCLUDES) $(CXXFLAGS) -c $< -o $@
 
 %.o: %.c
-	$(KESIT_CC) $(KESIT_INCLUDES) $(KESIT_CXXFLAGS) -c $< -o $@
+	$(CC) $(INCLUDES) $(CXXFLAGS) -c $< -o $@
 
 # Useful rules.
 clean:
@@ -35,7 +44,7 @@ clean:
 clobber:
 	@$(MAKE) clean
 	@rm -f $(target) out.gmv
-	rm *.vtk dck_* -f
+	@rm *.vtk dck_* -f
 
 distclean:
 	@$(MAKE) clobber
@@ -53,7 +62,4 @@ run: $(target)
 	@echo "***************************************************************"
 
 edit:
-	emacs $(local_srcfiles) $(local_includefiles) &
-
-plot:
-	gnuplot plot.gp -p
+	emacs $(srcfiles) $(includefiles) &

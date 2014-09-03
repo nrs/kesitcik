@@ -1,10 +1,8 @@
-
-
-#include "pr1.h"
-#include "prgl.h"
-#include "section.h"
-#include "glutMaster.h"
-#include "glutWindow.h"
+#include "kesitcik/pr1.h"
+#include "kesitcik/prgl.h"
+#include "kesitcik/section.h"
+#include "kesitcik/glutMaster.h"
+#include "kesitcik/glutWindow.h"
 #include <fstream>
 GlutMaster  * glutMaster;
 MeshWindow  * firstWindow = 0;
@@ -13,16 +11,11 @@ using namespace std;
 void gl_window_supermesh(supermesh &s);
 void duck_section(supermesh &s);
 
-
-
-
 int main(int argc, char** argv) {
-  
-
 
   supermesh s;
-  // triple_rein_rect(s,300,500, 
-  //                  3,8,35, 
+  // triple_rein_rect(s,300,500,
+  //                  3,8,35,
   //                  3,8,465,
   //                  2,8,250);
 //  double_rein_rect(s,300,500, 5,8,80,4,8,420);
@@ -48,8 +41,8 @@ int main(int argc, char** argv) {
 
 
 void gl_window_supermesh(supermesh &s){
-  glutMaster   = new GlutMaster();    
-  
+  glutMaster   = new GlutMaster();
+
   firstWindow  = new MeshWindow(glutMaster,
                                 700, 700,    // height, width
                                 0, 0,    // initPosition (x,y)
