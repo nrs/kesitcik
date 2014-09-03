@@ -1,9 +1,8 @@
-
-#include "pr1.h"
-#include "prgl.h"
+#include "kesitcik/pr1.h"
+#include "kesitcik/prgl.h"
 //#include "predicates.c"
-#include "predicates.h"
-#include "triangle.h"
+#include "kesitcik/predicates.h"
+#include "kesitcik/triangle.h"
 #include <time.h>
 
 //#define INSERTINTOVECTOR(a,b) a.insert(a.begin(),b.begin(),b.end())
@@ -31,7 +30,7 @@ namespace numtk{
     return result;
   }
 
-  void output_gp(std::vector<Real> &a, 
+  void output_gp(std::vector<Real> &a,
                  std::vector<Real> &b, std::vector<Real> &c, string filename){
     cout << "Writing " << filename << "." << endl;
     std::ofstream afile;
@@ -57,8 +56,8 @@ namespace numtk{
 unsigned int random_range(unsigned int min, unsigned int max) //range : [min, max)
 {
   static bool first = true;
-  if ( first ) 
-  {  
+  if ( first )
+  {
     srand(time(NULL)); //seeding for the first time only!
     first = false;
   }
@@ -76,8 +75,8 @@ Point random_vector(Real rad){
 // r = if u>1 then 2-u else u
 // [r*cos(t), r*sin(t)]
   static bool first = true;
-  if ( first ) 
-  {  
+  if ( first )
+  {
     srand(time(NULL)); //seeding for the first time only!
     first = false;
   }
@@ -85,7 +84,7 @@ Point random_vector(Real rad){
   Real t = 2 * M_PI * random_Real();
   Real u = random_Real() + random_Real();
   Real r = u>1 ? 2-u : u;
-  
+
   return Point(rad*r*cos(t),rad*r*sin(t), 0);
 
 }
@@ -185,7 +184,7 @@ triangle::triangle(line *l1, line *l2, line *l3){
   n.insert(l2->nodes[0]); n.insert(l2->nodes[1]);
   n.insert(l3->nodes[0]); n.insert(l3->nodes[1]);
   unsigned int i=0;
-  for(  std::set<node*>::iterator it = n.begin(); i<3 ; i++,it++ ){ 
+  for(  std::set<node*>::iterator it = n.begin(); i<3 ; i++,it++ ){
     this->nodes[i]=*it;
   }
   calc_area();
@@ -250,26 +249,26 @@ node supermesh::calc_cg(){
 
 bool do_lines_intersect_exclusive(REAL a[2], REAL b[2], REAL c[2], REAL d[2]){
 // Exclusive of the endpoints of the lines
-// To spell it out: suppose you're looking at two line segments, 
-// [AB] and [CD]. The segments intersect if and only if ((A and 
-// B are of different sides of [CD]) and (C and D are on different 
+// To spell it out: suppose you're looking at two line segments,
+// [AB] and [CD]. The segments intersect if and only if ((A and
+// B are of different sides of [CD]) and (C and D are on different
 // sides of [AB])).
 
-// To see whether two points, P and Q, are on different sides of a 
+// To see whether two points, P and Q, are on different sides of a
 // line segment [EF], compute two cross products, one for P and one for Q:
 
 // (Fx - Ex)(Py - Fy) - (Fy - Ey)(Px - Fx)
 
 // (Fx - Ex)(Qy - Fy) - (Fy - Ey)(Qx - Fx)
 
-// If the results have the same sign (both positive or both negative) 
-// then forget it, the points are on the same side, the segments do not 
-// intersect. If one is positive and the other negative, then the points 
-// are on opposite sides. 
+// If the results have the same sign (both positive or both negative)
+// then forget it, the points are on the same side, the segments do not
+// intersect. If one is positive and the other negative, then the points
+// are on opposite sides.
 
   static bool first2 = true;
-  if (first2) 
-  {  
+  if (first2)
+  {
     predicates::exactinit();
     first2 = false;
     return false;
@@ -297,7 +296,7 @@ bool do_lines_intersect_exclusive(REAL a[2], REAL b[2], REAL c[2], REAL d[2]){
   p3 = r3 > 0 ? 1 : 0;
   p4 = r4 > 0 ? 1 : 0;
 
-  if (fabs(r1)<TOLERANCE || fabs(r2)<TOLERANCE || 
+  if (fabs(r1)<TOLERANCE || fabs(r2)<TOLERANCE ||
       fabs(r3)<TOLERANCE || fabs(r4)<TOLERANCE){
     return false;
   }
@@ -309,7 +308,7 @@ bool do_lines_intersect_exclusive(REAL a[2], REAL b[2], REAL c[2], REAL d[2]){
 bool do_lines_intersect_inclusive(REAL a[2], REAL b[2], REAL c[2], REAL d[2]){
 // inclusive of the end points of the lines
   static bool first2 = true;
-  if (first2) {  
+  if (first2) {
     predicates::exactinit();
     first2 = false;
     return false;
@@ -389,7 +388,7 @@ void rectangular_section(mesh &m, Real left, Real right, Real top, Real bottom){
   m.lines.push_back(line(n[3],n[0]));
 
 
-  for (line_it=m.lines.begin(); line_it!=m.lines.end(); line_it++) 
+  for (line_it=m.lines.begin(); line_it!=m.lines.end(); line_it++)
     m.hull.push_back( &(*line_it) );
 }
 
@@ -422,7 +421,7 @@ void circular_section(mesh &m, Real rad, Real cen[2], int nsides){
     m.lines.push_back( line(node_ptrs[i], node_ptrs[i+1]) );
   }
   m.lines.push_back( line(node_ptrs.back(), node_ptrs.front()) );
-  
+
 // (*n[0])(0)=0;  (*n[0])(1)=0;
 //  (*n[1])(0)=width;  (*n[1])(1)=0;
 //  (*n[2])(0)=width;  (*n[2])(1)=height;
@@ -434,7 +433,7 @@ void circular_section(mesh &m, Real rad, Real cen[2], int nsides){
   // m.lines.push_back(line(n[3],n[0]));
 
 
-  for (line_it=m.lines.begin(); line_it!=m.lines.end(); line_it++) 
+  for (line_it=m.lines.begin(); line_it!=m.lines.end(); line_it++)
     m.hull.push_back( &(*line_it) );
 }
 
@@ -444,7 +443,7 @@ void mesh::init_centroids(){
   centroids.clear();
 
   for (tri_it = triangles.begin(); tri_it != triangles.end(); tri_it++){
-    centroids.push_back(node(  
+    centroids.push_back(node(
                           ((*tri_it->nodes[0])(0)+
                            (*tri_it->nodes[1])(0)+
                            (*tri_it->nodes[2])(0))/3,
@@ -480,12 +479,12 @@ void mesh::init_node2tri(){
 //   std::list<line>::iterator line_it;
 // //  std::list<line*>::iterator bine_it;
 
-//   node_it=nodes.begin(); 
+//   node_it=nodes.begin();
 //   n0 = &(*node_it);
 //   node_it++;
 //   n1 = &(*node_it);
 //   //nodes[0](0)=0;nodes[0](1)=0;nodes[0](2)=0;
-//   (*node_it)(0) = avlen; 
+//   (*node_it)(0) = avlen;
 //   *node_it += random_vector(probrad);
 
 //   *node_it++;
@@ -496,7 +495,7 @@ void mesh::init_node2tri(){
 
 //   triangles.push_front(triangle(n0,n1,n2,*this));
 
-//   for (line_it=lines.begin(); line_it!=lines.end(); line_it++) 
+//   for (line_it=lines.begin(); line_it!=lines.end(); line_it++)
 //     hull.push_back( &(*line_it) );
 // }
 
@@ -613,7 +612,7 @@ void mesh::triangulate_mesh(Real minarea)
 
   in.pointlist = (REAL *) malloc(in.numberofpoints * 2 * sizeof(REAL));
   in.segmentlist = (int *) malloc(in.numberofsegments * 2 * sizeof(int));
-  
+
   if ( holes.size()>0){
     in.numberofholes = holes.size();
     in.holelist= (REAL *) malloc(in.numberofpoints * 2 * sizeof(REAL));
@@ -633,7 +632,7 @@ void mesh::triangulate_mesh(Real minarea)
 
 
   i=0;
-  for (line_it=lines.begin(); 
+  for (line_it=lines.begin();
        line_it!=lines.end(); line_it++,i++){
 //    std::cout << "ASDASD" << (*line_it).nodes[0]->id <<std::endl;
     in.segmentlist[i*2]  = (*line_it).nodes[0]->id;
@@ -642,7 +641,7 @@ void mesh::triangulate_mesh(Real minarea)
 
 
   i=0;
-  for (node_it=nodes.begin(); 
+  for (node_it=nodes.begin();
        node_it!=nodes.end(); node_it++,i++){
     in.pointlist[i*2]  = (*node_it)(0);
     in.pointlist[i*2+1]= (*node_it)(1);
@@ -651,7 +650,7 @@ void mesh::triangulate_mesh(Real minarea)
   in.pointmarkerlist = (int *) NULL;
   in.regionlist= (REAL *) NULL;
   in.segmentmarkerlist = (int *) NULL;
- 
+
   // in.pointattributelist = (REAL *) malloc(in.numberofpoints *
   //                                         in.numberofpointattributes *
   //                                         sizeof(REAL));
@@ -708,12 +707,12 @@ void mesh::triangulate_mesh(Real minarea)
     node_ptrs.push_back(&(*node_it));
 
   for (i=0; i<out.numberofedges; i++)
-    lines.push_back(line( 
+    lines.push_back(line(
                       node_ptrs[out.edgelist[i*2]],
                       node_ptrs[out.edgelist[i*2+1]]));
-  
+
   for (i=0; i<out.numberoftriangles; i++)
-    triangles.push_back(triangle( 
+    triangles.push_back(triangle(
                           node_ptrs[out.trianglelist[i*3]],
                           node_ptrs[out.trianglelist[i*3+1]],
                           node_ptrs[out.trianglelist[i*3+2]]));
@@ -884,7 +883,7 @@ void mesh::print_info(){
   }
   std::cout << std::endl;
   for (line_it=lines.begin() ; line_it != lines.end() ; line_it++)
-    std::cout << &(*line_it)<< " " << line_it->nodes[0]->id << " " 
+    std::cout << &(*line_it)<< " " << line_it->nodes[0]->id << " "
               << line_it->nodes[1]->id << std::endl;
 
   for (bine_it=hull.begin() ; bine_it != hull.end() ; bine_it++){
@@ -901,7 +900,7 @@ void mesh::color_nodes(unsigned int c){
   std::list<node>::iterator it;
 
   for (it= nodes.begin(); it!=nodes.end(); it++) it->color=c;
-  
+
 }
 void mesh::color_lines(unsigned int c){
   std::list<line>::iterator it;
@@ -959,7 +958,7 @@ void mesh::clear(){
 //    // finam(0)+=0.05;
 
 // //  std::cout<<final << std::endl;
-    
+
 
 // //  node newnode(final(0),final(1));
 //   node lolnode(final(0),final(1));
@@ -968,7 +967,7 @@ void mesh::clear(){
 //       return false;
 //   }
 
-// // Intersection test    
+// // Intersection test
 //   line lolline1(&lolnode,n1,true);
 //   line lolline2(n0,&lolnode,true);
 
@@ -976,7 +975,7 @@ void mesh::clear(){
 
 
 // #if 1
-//   for (std::list<line*>::iterator it = hull.begin(); 
+//   for (std::list<line*>::iterator it = hull.begin();
 //        it!=hull.end() ; it++){
 //     if ( *it != l ){
 //       if ((*it)->intersect_line(lolline1) || (*it)->intersect_line(lolline2)) {
@@ -989,9 +988,9 @@ void mesh::clear(){
 //     }
 //   }
 // #else
-//   // for (std::list<line>::iterator it = lines.begin(); 
+//   // for (std::list<line>::iterator it = lines.begin();
 //   //      it!=lines.end() ; it++){
-//   //   if (&(*it) != l && 
+//   //   if (&(*it) != l &&
 //   //       ((*it).intersect_line(lolline1) || (*it).intersect_line(lolline2)) ){
 //   //     std::cout << "Lines intersect."<< std::endl;
 //   //     return false;
@@ -1089,7 +1088,7 @@ bool mesh::in_vtk_lines(char *infilename){
   // if () {
   //   printf("Error:  Unable to open file %s\n", infilename);
   //   return false;
-  // }    
+  // }
   infile.open (infilename);
   printf("Opening %s.\n", infilename);
 
@@ -1121,7 +1120,7 @@ bool mesh::in_vtk_lines(char *infilename){
 //      cout << iline ;
       iss >> dummy >> ncells;
       //    cout << ncells << endl;
-      
+
       std::vector<node*> node_ptrs;
       for (node_it = nodes.begin(); node_it!=nodes.end(); node_it++)
         node_ptrs.push_back(&(*node_it));
@@ -1144,7 +1143,7 @@ bool mesh::in_vtk_lines(char *infilename){
   while((bufferp = readline(line, fp, &line_count)) != NULL) {
     if(strlen(line) == 0) continue;
     //swallow lines beginning with a comment sign or white space
-    if(line[0] == '#' || line[0]=='\n' || line[0] == 10 || line[0] == 13 || 
+    if(line[0] == '#' || line[0]=='\n' || line[0] == 10 || line[0] == 13 ||
        line[0] == 32) continue;
 
     sscanf(line, "%s", id);
@@ -1155,7 +1154,7 @@ bool mesh::in_vtk_lines(char *infilename){
 
 
       for(i = 0; i < nverts; i++){
-        
+
         sscanf(line, "%f %f %f", lol[0] , lol[1] , lol[2] );
 
         // bufferp = readline(line, fp, &line_count);
@@ -1181,7 +1180,7 @@ bool mesh::in_vtk_lines(char *infilename){
         //   bufferp = findnextnumber(bufferp);
         // }
       }
-          
+
       continue;
 
     }
@@ -1256,7 +1255,7 @@ void mesh::out_vtk1(bool ohull){
   fprintf(outfile, "DATASET UNSTRUCTURED_GRID\n");
   fprintf(outfile, "POINTS %d double\n", NN);
 
-  
+
   for(node_it=nodes.begin(); node_it!=nodes.end() ; node_it++){
     Real x = (*node_it)(0);//pointloop[0];
     Real y = (*node_it)(1);//pointloop[1];
@@ -1268,7 +1267,7 @@ void mesh::out_vtk1(bool ohull){
 
   fprintf(outfile, "CELLS %d %d\n", NEL, NEL*(nnodes+1));
   //NEL rows, each has 1 type id + 4 node id's
- 
+
   if(ohull){
     // for(unsigned int i=0; i<NEL ; i++){
     //   unsigned int n1 = hull[i]->nodes[0]->id;
@@ -1293,16 +1292,16 @@ void mesh::out_vtk1(bool ohull){
 
   }
   fprintf(outfile, "\n");
-  
+
   fprintf(outfile, "CELL_TYPES %d\n", NEL);
   for(int tid=0; tid<NEL; tid++){
     fprintf(outfile, "%d\n", celltype);
   }
   fprintf(outfile, "\n");
-  
-  
+
+
   fclose(outfile);
-  
+
 }
 
 void out_vtk1(list<mesh> &m, vector<vector<Real> > &r, char *lolchar){
@@ -1315,11 +1314,11 @@ void out_vtk1(list<mesh> &m, vector<vector<Real> > &r, char *lolchar){
   vector<vector<Real> >::iterator vec_it;
   unsigned int NEL=0;
   unsigned int NN=0;
-  
+
   vector<unsigned int> NNN(1,0);
   vector<unsigned int> NELL(1,0);
 
-  
+
   for (mesh_it = m.begin(); mesh_it != m.end(); mesh_it++){
     NN+=mesh_it->nodes.size();
     NEL+=mesh_it->triangles.size();
@@ -1352,17 +1351,17 @@ void out_vtk1(list<mesh> &m, vector<vector<Real> > &r, char *lolchar){
   fprintf(outfile, "ASCII\n"); // BINARY
   fprintf(outfile, "DATASET UNSTRUCTURED_GRID\n");
   fprintf(outfile, "POINTS %d double\n", NN);
-  
+
   for (mesh_it = m.begin(); mesh_it != m.end(); mesh_it++){
-    
+
     for(node_it=mesh_it->nodes.begin(); node_it!=mesh_it->nodes.end() ; node_it++){
       Real x = (*node_it)(0);
       Real y = (*node_it)(1);
       Real z = (*node_it)(2);
-      
+
       fprintf(outfile, "%.6e %.6e %.6e\n", x, y, z);
     }
-    
+
   }
   fprintf(outfile, "\n");
 
@@ -1370,8 +1369,8 @@ void out_vtk1(list<mesh> &m, vector<vector<Real> > &r, char *lolchar){
 
   unsigned i = 0;
   for (mesh_it = m.begin(); mesh_it != m.end(); mesh_it++, i++){
-    
-    for(tri_it = mesh_it->triangles.begin(); 
+
+    for(tri_it = mesh_it->triangles.begin();
         tri_it != mesh_it->triangles.end() ; tri_it++){
       unsigned int n1 = tri_it->nodes[0]->id + NNN[i];
       unsigned int n2 = tri_it->nodes[1]->id + NNN[i];
@@ -1381,14 +1380,14 @@ void out_vtk1(list<mesh> &m, vector<vector<Real> > &r, char *lolchar){
   }
 
   fprintf(outfile, "\n");
-  
+
   fprintf(outfile, "CELL_TYPES %d\n", NEL);
   for(int tid=0; tid<NEL; tid++){
     fprintf(outfile, "%d\n", celltype);
   }
   fprintf(outfile, "\nPOINT_DATA %d\n\n",NN);
   fprintf(outfile,"SCALARS alpha float 1\nLOOKUP_TABLE default\n");
-  
+
   for (vec_it = r.begin(); vec_it != r.end(); vec_it++){
     // if (vec_it->size() != NN) {
     //   cerr<< "Skipping scalar set with incompatible size." << endl;
@@ -1405,7 +1404,7 @@ void out_vtk1(list<mesh> &m, vector<vector<Real> > &r, char *lolchar){
 }
 
 
-void out_vtk1(list<mesh> &m, vector<vector<Real> > &r1, 
+void out_vtk1(list<mesh> &m, vector<vector<Real> > &r1,
               vector<vector<Real> > &r2, char *lolchar){
   if (r1.size() != m.size() || r2.size() != m.size()){
     cerr << "out_vtk1: vector sizes do not match." << endl;
@@ -1416,11 +1415,11 @@ void out_vtk1(list<mesh> &m, vector<vector<Real> > &r1,
   vector<vector<Real> >::iterator vec_it;
   unsigned int NEL=0;
   unsigned int NN=0;
-  
+
   vector<unsigned int> NNN(1,0);
   vector<unsigned int> NELL(1,0);
 
-  
+
   for (mesh_it = m.begin(); mesh_it != m.end(); mesh_it++){
     NN+=mesh_it->nodes.size();
     NEL+=mesh_it->triangles.size();
@@ -1451,17 +1450,17 @@ void out_vtk1(list<mesh> &m, vector<vector<Real> > &r1,
   fprintf(outfile, "ASCII\n"); // BINARY
   fprintf(outfile, "DATASET UNSTRUCTURED_GRID\n");
   fprintf(outfile, "POINTS %d double\n", NN);
-  
+
   for (mesh_it = m.begin(); mesh_it != m.end(); mesh_it++){
-    
+
     for(node_it=mesh_it->nodes.begin(); node_it!=mesh_it->nodes.end() ; node_it++){
       Real x = (*node_it)(0);
       Real y = (*node_it)(1);
       Real z = (*node_it)(2);
-      
+
       fprintf(outfile, "%.6e %.6e %.6e\n", x, y, z);
     }
-    
+
   }
   fprintf(outfile, "\n");
 
@@ -1469,8 +1468,8 @@ void out_vtk1(list<mesh> &m, vector<vector<Real> > &r1,
 
   unsigned i = 0;
   for (mesh_it = m.begin(); mesh_it != m.end(); mesh_it++, i++){
-    
-    for(tri_it = mesh_it->triangles.begin(); 
+
+    for(tri_it = mesh_it->triangles.begin();
         tri_it != mesh_it->triangles.end() ; tri_it++){
       unsigned int n1 = tri_it->nodes[0]->id + NNN[i];
       unsigned int n2 = tri_it->nodes[1]->id + NNN[i];
@@ -1480,14 +1479,14 @@ void out_vtk1(list<mesh> &m, vector<vector<Real> > &r1,
   }
 
   fprintf(outfile, "\n");
-  
+
   fprintf(outfile, "CELL_TYPES %d\n", NEL);
   for(int tid=0; tid<NEL; tid++){
     fprintf(outfile, "%d\n", celltype);
   }
   fprintf(outfile, "\nPOINT_DATA %d\n\n",NN);
   fprintf(outfile,"SCALARS A float 1\nLOOKUP_TABLE default\n");
-  
+
   for (vec_it = r1.begin(); vec_it != r1.end(); vec_it++){
     // if (vec_it->size() != NN) {
     //   cerr<< "Skipping scalar set with incompatible size." << endl;
@@ -1500,7 +1499,7 @@ void out_vtk1(list<mesh> &m, vector<vector<Real> > &r1,
   }
 
   fprintf(outfile,"SCALARS B float 1\nLOOKUP_TABLE default\n");
-  
+
   for (vec_it = r2.begin(); vec_it != r2.end(); vec_it++){
     // if (vec_it->size() != NN) {
     //   cerr<< "Skipping scalar set with incompatible size." << endl;
@@ -1550,7 +1549,7 @@ void out_vtk1(list<mesh> &m, vector<vector<Real> > &r1,
 //    // finam(0)+=0.05;
 
 // //  std::cout<<final << std::endl;
-    
+
 //   node lolnode;
 // //  node newnode(final(0),final(1));
 //   node lolnode1(final(0),final(1));
@@ -1566,7 +1565,7 @@ void out_vtk1(list<mesh> &m, vector<vector<Real> > &r1,
 //     lolnode = lolnode1;
 
 //   }
-// // Intersection test    
+// // Intersection test
 //   line lolline1(n1,&lolnode,true),lolline2(&lolnode,n0,true);
 
 
@@ -1577,7 +1576,7 @@ void out_vtk1(list<mesh> &m, vector<vector<Real> > &r1,
 
 //   // std::cout<<"ASDASDASDASD  "<< do_lines_intersect(a,b,c,d) << std::endl;
 // #if 1
-//   for (std::list<line*>::iterator it = hull.begin(); 
+//   for (std::list<line*>::iterator it = hull.begin();
 //        it!=hull.end() ; it++){
 //     if ( *it != l &&
 //       ((*it)->intersect_line(lolline1) || (*it)->intersect_line(lolline2)) ){
@@ -1588,9 +1587,9 @@ void out_vtk1(list<mesh> &m, vector<vector<Real> > &r1,
 //     }
 //   }
 // #else
-//   for (std::list<line>::iterator it = lines.begin(); 
+//   for (std::list<line>::iterator it = lines.begin();
 //        it!=lines.end() ; it++){
-//     if (&(*it) != l && 
+//     if (&(*it) != l &&
 //         ((*it).intersect_line(lolline1) || (*it).intersect_line(lolline2)) ){
 //       std::cout << "Lines intersect."<< std::endl;
 //       return false;
@@ -1603,7 +1602,7 @@ void out_vtk1(list<mesh> &m, vector<vector<Real> > &r1,
 // // Area tests:
 //   Real area = calculate_triangle_area_2d(*n0, *n1, lolnode) ;
 // //  Real equilateral = 0.43301270189 * length*length;
-  
+
 //   Real equilateral = 0.43301270189 * avlen*avlen;
 
 //   if ( area < 0.2* equilateral||

@@ -1,6 +1,4 @@
-
-
-#include "interval.h"
+#include "kesitcik/interval.h"
 
 compoundInterval compoundInterval::operator+ (compoundInterval c){
   compoundInterval v=*this;
@@ -13,7 +11,7 @@ compoundInterval compoundInterval::operator- (compoundInterval c){
   for (unsigned int i = 0; i< c.size(); i++)
     v-=c[i];
   return v;
-  
+
 }
 compoundInterval& compoundInterval::operator+= (compoundInterval c){
   for (unsigned int i = 0; i< c.size(); i++)
@@ -31,7 +29,7 @@ compoundInterval compoundInterval::operator+ (interval c){
   if (numtk::iszero(c.e - c.s)) return *this;
   compoundInterval v=*this;
   if (_intervals.size()==0){
-    v._intervals.push_back(c); 
+    v._intervals.push_back(c);
     return v;
   }else{
     v._intervals.push_back(c);
@@ -46,7 +44,7 @@ compoundInterval compoundInterval::operator- (interval c){
 
   sort(_intervals.begin(), _intervals.end(), interval_sorter);
 
-  
+
   vector<interval> r;
   for (unsigned int i = 0; i < _intervals.size(); i++){
     if (c.e <= _intervals[i].s){
@@ -77,7 +75,7 @@ compoundInterval compoundInterval::operator- (interval c){
 void compoundInterval::yunion(){
   if (_intervals.size()==0) return;
   sort(_intervals.begin(), _intervals.end(), interval_sorter);
-  
+
   vector<interval> r;
   r.push_back(_intervals[0]);
   for (unsigned int i = 0; i < _intervals.size(); i++){
@@ -96,7 +94,7 @@ compoundInterval& compoundInterval::operator+= (interval c){
   if (numtk::iszero(c.e - c.s)) return *this;
 
   if (_intervals.size()==0){
-    _intervals.push_back(c); 
+    _intervals.push_back(c);
     return *this;
   }else{
     _intervals.push_back(c);
@@ -111,7 +109,7 @@ compoundInterval& compoundInterval::operator-= (interval c){
 
   sort(_intervals.begin(), _intervals.end(), interval_sorter);
 
-  
+
   vector<interval> r;
   for (unsigned int i = 0; i < _intervals.size(); i++){
     if (c.e <= _intervals[i].s){
@@ -180,7 +178,7 @@ void compoundInterval::subtract_infinity(Real a, bool side)
   interval d;
 
   // side == 1 for positive, == 0 for negative
-  
+
   compoundInterval r;
   if (side == true){
     for (unsigned int i = 0; i < this->size(); i++){
@@ -210,4 +208,3 @@ void compoundInterval::subtract_infinity(Real a, bool side)
 
 
 }
-

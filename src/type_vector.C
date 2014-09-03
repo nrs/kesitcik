@@ -23,7 +23,7 @@
 #include <iomanip> // for std::setw, std::setiosflags
 
 // Local includes
-#include "type_vector.h"
+#include "kesitcik/type_vector.h"
 
 namespace libMesh
 {
@@ -47,13 +47,13 @@ TypeVector<T> TypeVector<T>::unit() const
 
 #if LIBMESH_DIM == 2
   return TypeVector<T>(_coords[0]/length,
-		       _coords[1]/length);
+                       _coords[1]/length);
 #endif
 
 #if LIBMESH_DIM == 3
   return TypeVector<T>(_coords[0]/length,
-		       _coords[1]/length,
-		       _coords[2]/length);
+                       _coords[1]/length,
+                       _coords[2]/length);
 #endif
 
 }
@@ -90,7 +90,7 @@ void TypeVector<T>::print(std::ostream& os) const
 
 template <typename T>
 void TypeVector<T>::write_unformatted (std::ostream &out,
-				       const bool newline) const
+                                       const bool newline) const
 {
 //  libmesh_assert (out);
 

@@ -1,4 +1,4 @@
-#include "prgl.h"
+#include "kesitcik/prgl.h"
 //#include "zpr.h"
 
 
@@ -231,7 +231,7 @@ void MeshWindow::draw_mesh(mesh &m)
 
 //  m.print_info();
 
-    for (tri_it=m.triangles.begin(); 
+    for (tri_it=m.triangles.begin();
          tri_it!=m.triangles.end(); tri_it++){
       draw_triangle(*tri_it,4);
 
@@ -241,7 +241,7 @@ void MeshWindow::draw_mesh(mesh &m)
     //   draw_node2(*node_it,0.5,0);
     // }
 
-    // for (node_it=(*mesh_it)->centroids.begin(); 
+    // for (node_it=(*mesh_it)->centroids.begin();
     //      node_it!=(*mesh_it)->centroids.end(); node_it++){
     //   draw_node2(*node_it,0.08,0);
     // }
@@ -255,7 +255,7 @@ void MeshWindow::draw_mesh(mesh &m)
     //   draw_line(*(*bine_it),1);
     // }
 
-  
+
 
 }
 void MeshWindow::draw_supermesh()
@@ -268,13 +268,13 @@ void MeshWindow::draw_supermesh()
   std::list<mesh>::iterator mesh_it;
   std::list<line>::iterator line_it;
 
-  for (mesh_it = glsupermesh->meshes.begin(); 
+  for (mesh_it = glsupermesh->meshes.begin();
        mesh_it!= glsupermesh->meshes.end(); mesh_it++){
     if (mesh_it->nodes.size()==0) continue;
     draw_mesh(*mesh_it);
   }
 
-  for (line_it = glsupermesh->misclines.begin(); 
+  for (line_it = glsupermesh->misclines.begin();
        line_it!= glsupermesh->misclines.end(); line_it++){
     draw_line(*line_it,0);
   }
@@ -292,7 +292,7 @@ void MeshWindow::CallBackDisplayFunc()
   glLoadIdentity();
 
   SetColor(0);
-  
+
 //  glOrtho(0, 400,  600, 0,  -1.0, -1.0);
   glScaled(g_scaling_factor/g_fViewDistance,
            g_scaling_factor/g_fViewDistance,
@@ -325,10 +325,10 @@ void MeshWindow::CallBackDisplayFunc()
 }
 // void  glMeshRenderer::idle(void)
 // {
- 
+
 //     //timex = glutGet(GLUT_ELAPSED_TIME) ;
 
-  
+
 // //  frame++;
 // //  time2=glutGet(GLUT_ELAPSED_TIME);
 // //  std::cout << "ASDASDASD";
@@ -338,7 +338,7 @@ void MeshWindow::CallBackDisplayFunc()
 // //    timebase = time2;
 // //    frame = 0;
 // //  }
-  
+
 // //    Sleep(10);
 // }
 
@@ -436,7 +436,7 @@ MeshWindow::MeshWindow(GlutMaster * glutMaster,
                        int setInitPositionX, int setInitPositionY,
                        char * title){
 
-   width  = setWidth;               
+   width  = setWidth;
    height = setHeight;
 
    initPositionX = setInitPositionX;
@@ -465,4 +465,3 @@ MeshWindow::~MeshWindow(){
 
    glutDestroyWindow(windowID);
 }
-

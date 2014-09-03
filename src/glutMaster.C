@@ -10,10 +10,10 @@
 //                                                            //
 ////////////////////////////////////////////////////////////////
 
-#include "glutMaster.h"
-#include "glutWindow.h"
-                                                       
-GlutWindow * viewPorts[MAX_NUMBER_OF_WINDOWS]; 
+#include "kesitcik/glutMaster.h"
+#include "kesitcik/glutWindow.h"
+
+GlutWindow * viewPorts[MAX_NUMBER_OF_WINDOWS];
 
 int GlutMaster::currentIdleWindow   = 0;
 int GlutMaster::idleFunctionEnabled = 0;
@@ -21,7 +21,7 @@ int GlutMaster::idleFunctionEnabled = 0;
 
 GlutMaster::GlutMaster(){
 
-   // Create dummy variables 
+   // Create dummy variables
 
    char * dummy_argv[1];
    dummy_argv[0] = "run";
@@ -35,7 +35,7 @@ GlutMaster::GlutMaster(){
 GlutMaster::~GlutMaster(){
 
 }
- 
+
 void GlutMaster::CallBackDisplayFunc(void){
 
    int windowID = glutGetWindow();
@@ -49,7 +49,7 @@ void GlutMaster::CallBackIdleFunc(void){
       viewPorts[currentIdleWindow]->CallBackIdleFunc();
    }
 }
- 
+
 void GlutMaster::CallBackKeyboardFunc(unsigned char key, int x, int y){
 
    int windowID = glutGetWindow();
@@ -84,7 +84,7 @@ void GlutMaster::CallBackSpecialFunc(int key, int x, int y){
 
    int windowID = glutGetWindow();
    viewPorts[windowID]->CallBackSpecialFunc(key, x, y);
-}   
+}
 
 void GlutMaster::CallBackVisibilityFunc(int visible){
 
@@ -94,13 +94,13 @@ void GlutMaster::CallBackVisibilityFunc(int visible){
 
 void GlutMaster::CallGlutCreateWindow(char * setTitle, GlutWindow * glutWindow){
 
-   // Open new window, record its windowID , 
+   // Open new window, record its windowID ,
 
    int windowID = glutCreateWindow(setTitle);
 
    glutWindow->SetWindowID(windowID);
 
-   // Store the address of new window in global array 
+   // Store the address of new window in global array
    // so GlutMaster can send events to propoer callback functions.
 
    viewPorts[windowID] = glutWindow;
@@ -110,13 +110,13 @@ void GlutMaster::CallGlutCreateWindow(char * setTitle, GlutWindow * glutWindow){
 
    glutDisplayFunc(CallBackDisplayFunc);
 // Idle Function Disabled in this implementation to save CPU cycles
-//   glutIdleFunc(CallBackIdleFunc); 
+//   glutIdleFunc(CallBackIdleFunc);
    glutKeyboardFunc(CallBackKeyboardFunc);
    glutSpecialFunc(CallBackSpecialFunc);
    glutMouseFunc(CallBackMouseFunc);
    glutMotionFunc(CallBackMotionFunc);
    glutPassiveMotionFunc(CallBackPassiveMotionFunc);
-   glutReshapeFunc(CallBackReshapeFunc); 
+   glutReshapeFunc(CallBackReshapeFunc);
    glutVisibilityFunc(CallBackVisibilityFunc);
 }
 
@@ -124,7 +124,7 @@ void GlutMaster::CallGlutMainLoop(void){
 
    glutMainLoop();
 }
-                              
+
 void GlutMaster::DisableIdleFunction(void){
 
    idleFunctionEnabled = 0;
@@ -153,17 +153,3 @@ void GlutMaster::SetIdleToCurrentWindow(void){
 
    currentIdleWindow = glutGetWindow();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

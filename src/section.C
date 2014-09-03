@@ -1,5 +1,5 @@
-#include "section.h"
-#include "interval.h"
+#include "kesitcik/section.h"
+#include "kesitcik/interval.h"
 
 using namespace constitutive;
 
@@ -20,7 +20,7 @@ std::vector<Real> project2nodes( mesh &m, std::vector<Real> &vec){
   Real dum;
   for (node_it = m.nodes.begin(); node_it!=m.nodes.end(); node_it++){
     dum=0;
-    for (tri_it = m.node2tri[&(*node_it)].begin(); 
+    for (tri_it = m.node2tri[&(*node_it)].begin();
          tri_it != m.node2tri[&(*node_it)].end();
          tri_it++){
       dum+=vec[(*tri_it)->id];
@@ -45,7 +45,7 @@ Real normal_force( supermesh &s, Real a, Real b, Real slope){
   Real F = 0;
   for (mesh_it = s.meshes.begin(); mesh_it != s.meshes.end(); mesh_it++){
     Real eps, sig;
-    for (tri_it = mesh_it->triangles.begin(); 
+    for (tri_it = mesh_it->triangles.begin();
          tri_it!=mesh_it->triangles.end(); tri_it++){
       eps = slope * ( (*tri_it->cent)(1) - b) + a ;
       sig = mesh_it->mat->sig(eps) ;
@@ -64,7 +64,7 @@ Real normal_force( supermesh &s, Real a, Real b, Real slope){
 //   F = 0, M = 0;
 //   for (mesh_it = s.meshes.begin(); mesh_it != s.meshes.end(); mesh_it++){
 //     Real eps, sigma, y, dist,force;
-//     for (tri_it = mesh_it->triangles.begin(); 
+//     for (tri_it = mesh_it->triangles.begin();
 //          tri_it!=mesh_it->triangles.end(); tri_it++){
 //       y = (*tri_it->cent)(1);
 //       eps = slope * (y - b) + a ;
@@ -85,14 +85,14 @@ Real moment( supermesh &s, Real a, Real b, Real slope){
   Real M = 0;
   for (mesh_it = s.meshes.begin(); mesh_it != s.meshes.end(); mesh_it++){
     Real eps, sigma, y, dist;
-    for (tri_it = mesh_it->triangles.begin(); 
+    for (tri_it = mesh_it->triangles.begin();
          tri_it!=mesh_it->triangles.end(); tri_it++){
       y = (*tri_it->cent)(1);
 //      dist = y - (-1*a/slope + b) ;
       dist = y - s.cg(1);
       eps = slope * (y-b) + a;
 //      Real eps2 = slope * (dist-b) + a;
-//      if (dist>0  ) 
+//      if (dist>0  )
 //      cout << "ASDASDASDASDAS " << dist <<" " << y << " "<< (-1*a/slope + b)  <<endl;
       sigma = mesh_it->mat->sig(eps) ;
       M += tri_it->area * sigma * dist;
@@ -120,13 +120,13 @@ vector<Real> root_bisect_force(supermesh &s, Real a, Real b,Real c, Real d, Real
   vector<Real> initial = numtk::range(lo, up,20);
   vector<Real> result;
   const Real mytolerance = 1e-10;
-  const unsigned int iterlim = 100; 
+  const unsigned int iterlim = 100;
 
   for (unsigned int i = 0; i<initial.size()-1; i++){
 //    cout << a <<" "<< b << " " << initial[i]<<" "<<normal_force(s,a,b,initial[i  ]) << endl;
     if ( numtk::sign(normal_force(s,a,b,initial[i  ])-force)!=
          numtk::sign(normal_force(s,a,b,initial[i+1])-force) ){
-      
+
       Real x=initial[i],z,zold,y=initial[i+1];
       z = zold = (x+y)/2;
       unsigned int niter = 0;
@@ -156,21 +156,21 @@ vector<Real> root_bisect_moment(supermesh &s, Real a, Real b,Real c, Real d, Rea
   vector<Real> initial = numtk::range(lo, up,100);
   vector<Real> result;
   const Real mytolerance = 1e-10;
-  const unsigned int iterlim = 100; 
-  
+  const unsigned int iterlim = 100;
+
 //  for (unsigned int i = 0; i<initial.size(); i++)
 //    cout << "PRT "<< initial[i] <<" " << moment(s,a,b,initial[i]) << endl;
-    
+
   for (unsigned int i = 0; i<initial.size()-1; i++){
     Real p =  moment(s,a,b,initial[i  ])-mom;
     Real q =  moment(s,a,b,initial[i+1])-mom;
-    if ( numtk::sign(p)!= numtk::sign(q) && 
+    if ( numtk::sign(p)!= numtk::sign(q) &&
          !(numtk::isinf(p) || numtk::isinf(q)) ){
-      
+
       Real x=initial[i],z,zold,y=initial[i+1];
       z = zold = (x+y)/2;
       unsigned int niter = 0;
-      
+
       while (true){
 //        cout << x << " " << y << endl;
         if (niter>iterlim) {
@@ -186,7 +186,7 @@ vector<Real> root_bisect_moment(supermesh &s, Real a, Real b,Real c, Real d, Rea
           cout << "#iter = " << niter << " " << z << endl;
           cout << "LOL " <<  (-1*a/z + b) << endl;
 
-          result.push_back(z); 
+          result.push_back(z);
 //          cout << moment(s,a,b,z) << " " << mom << endl;
           break;
         }
@@ -211,12 +211,12 @@ void stress_vtk(supermesh &s, Real a, Real b, Real slope, char *lolchar ){
     vector<Real> epsv;
     vector<Real> sigv;
 
-    for (tri_it = mesh_it->triangles.begin(); 
+    for (tri_it = mesh_it->triangles.begin();
          tri_it!=mesh_it->triangles.end(); tri_it++){
       epsv.push_back(  slope* ( (*(*tri_it).cent)(1) - b) +a );
     }
     i=0;
-    for (tri_it = mesh_it->triangles.begin(); 
+    for (tri_it = mesh_it->triangles.begin();
          tri_it!=mesh_it->triangles.end(); tri_it++, i++){
       sigv.push_back( mesh_it->mat->sig(epsv[i]) );
     }
@@ -291,14 +291,14 @@ compoundInterval get_slope_range(Point p, supermesh &s)
     pivsign.push_back(vector<bool>());
 
     ex[0] = ex[1] = (*mesh_it->triangles.begin()->cent)(1);
-    for (tri_it = mesh_it->triangles.begin(); 
+    for (tri_it = mesh_it->triangles.begin();
          tri_it!= mesh_it->triangles.end(); tri_it++){
       (*tri_it->cent)(1) < ex[0] ? ex[0]=(*tri_it->cent)(1) : 0;
       (*tri_it->cent)(1) > ex[1] ? ex[1]=(*tri_it->cent)(1) : 0;
     }
     ep[0] = min(mesh_it->mat->epsult[0],mesh_it->mat->epsult[1]) ;
     ep[1] = max(mesh_it->mat->epsult[0],mesh_it->mat->epsult[1]) ;
-    
+
     Point a(ex[0],ep[0]);
     Point b(ex[1],ep[0]);
     Point c(ex[0],ep[1]);
@@ -313,7 +313,7 @@ compoundInterval get_slope_range(Point p, supermesh &s)
     pivsign.back().push_back(0);
     pivsign.back().push_back(0);
     pivsign.back().push_back(1);
-    
+
   }
 
 
@@ -325,7 +325,7 @@ compoundInterval get_slope_range(Point p, supermesh &s)
       l = numtk::slope(p,pivots[j][m]);
       u = numtk::slope(p,pivots[j][m+2]);
 //      cout <<i<< ": A " << l << " " << u <<endl;
-      if ((numtk::isnan(u) || numtk::isinf(u) || 
+      if ((numtk::isnan(u) || numtk::isinf(u) ||
            numtk::isnan(l) || numtk::isinf(l)))
         continue;
       dum.back()+=interval(l,u);
@@ -339,7 +339,7 @@ compoundInterval get_slope_range(Point p, supermesh &s)
 //          cout << i << " " << q << "  "<< dum[q] << endl;
       lol = lol.intersection(dum[q]);
 //          lol +=(dum[q]);
-    } 
+    }
     all = lol;
   }
 
@@ -355,7 +355,7 @@ compoundInterval get_slope_range(Point p, supermesh &s)
       if (numtk::isnan(u) && numtk::isnan(l)) continue;
       if (numtk::isinf(u) && numtk::isinf(l)) continue;
 //      cout <<i<< ": U " << l << " " << u <<endl;
-        
+
       if (numtk::isinf(l)){
         bool dumb = numtk::isposit(pivots[j][m*2](0)-p(0)) *
           !numtk::isposit(u);
@@ -379,7 +379,7 @@ compoundInterval get_slope_range(Point p, supermesh &s)
       all-=interval(u,l);
     }
   }
-  
+
   return all;
 }
 
@@ -439,14 +439,14 @@ void m_vs_phi(supermesh &s, unsigned int ndiv, Real N,
     pivsign.push_back(vector<bool>());
 
     ex[0] = ex[1] = (*mesh_it->triangles.begin()->cent)(1);
-    for (tri_it = mesh_it->triangles.begin(); 
+    for (tri_it = mesh_it->triangles.begin();
          tri_it!= mesh_it->triangles.end(); tri_it++){
       (*tri_it->cent)(1) < ex[0] ? ex[0]=(*tri_it->cent)(1) : 0;
       (*tri_it->cent)(1) > ex[1] ? ex[1]=(*tri_it->cent)(1) : 0;
     }
     ep[0] = min(mesh_it->mat->epsult[0],mesh_it->mat->epsult[1]) ;
     ep[1] = max(mesh_it->mat->epsult[0],mesh_it->mat->epsult[1]) ;
-    
+
     Point a(ex[0],ep[0]);
     Point b(ex[1],ep[0]);
     Point c(ex[0],ep[1]);
@@ -481,7 +481,7 @@ void m_vs_phi(supermesh &s, unsigned int ndiv, Real N,
         if (numtk::isnan(u) || numtk::isinf(u) || numtk::isnan(l) || numtk::isinf(l))
           continue;
         all.back()[k]+=interval(l,u);
-      }                 
+      }
         //   all.back()[k]+=;
         // interval(numtk::slope(pivots.back()[k],pivots.back()[1] ),
         //          numtk::slope(pivots.back()[k],pivots.back()[3] ));
@@ -497,7 +497,7 @@ void m_vs_phi(supermesh &s, unsigned int ndiv, Real N,
     }
 #endif
 
-    
+
   }
 #if 0
   for (unsigned int i = 0; i < pivots.size(); i++){
@@ -510,7 +510,7 @@ void m_vs_phi(supermesh &s, unsigned int ndiv, Real N,
           l = numtk::slope(pivots[i][k],pivots[j][m]);
           u = numtk::slope(pivots[i][k],pivots[j][m+2]);
           cout <<i<< ": A " << l << " " << u <<endl;
-          if ((numtk::isnan(u) || numtk::isinf(u) || 
+          if ((numtk::isnan(u) || numtk::isinf(u) ||
                 numtk::isnan(l) || numtk::isinf(l)))
             continue;
           dum.back()+=interval(l,u);
@@ -524,7 +524,7 @@ void m_vs_phi(supermesh &s, unsigned int ndiv, Real N,
 //          cout << i << " " << q << "  "<< dum[q] << endl;
           lol = lol.intersection(dum[q]);
 //          lol +=(dum[q]);
-        } 
+        }
         all[i][k] = lol;
       }else continue;
 
@@ -540,7 +540,7 @@ void m_vs_phi(supermesh &s, unsigned int ndiv, Real N,
           if (numtk::isnan(u) && numtk::isnan(l)) continue;
           if (numtk::isinf(u) && numtk::isinf(l)) continue;
           cout <<i<< ": U " << l << " " << u <<endl;
-        
+
           if (numtk::isinf(l)){
             bool dumb = numtk::isposit(pivots[j][m*2](0)-pivots[i][k](0)) *
               !numtk::isposit(u);
@@ -561,11 +561,11 @@ void m_vs_phi(supermesh &s, unsigned int ndiv, Real N,
             all[i][k].subtract_infinity(0,!pivsign[i][k]);
             continue;
           }
-        
- 
+
+
           all[i][k]-=interval(u,l);
           // cout <<i<< ": A " << l << " " << u <<endl;
-          // if (!(numtk::isnan(u) || numtk::isinf(u) || 
+          // if (!(numtk::isnan(u) || numtk::isinf(u) ||
           //       numtk::isnan(l) || numtk::isinf(l)))
           // dum2.back()+=interval(l,u);
         }
@@ -599,7 +599,7 @@ void m_vs_phi(supermesh &s, unsigned int ndiv, Real N,
     }
   }
 
-  ofstream of2; 
+  ofstream of2;
   of2 << "# Curvature, Moment" << endl;
   sprintf(dumchar, "%s_mphi.txt",ofilename);
   of2.open(dumchar);
@@ -608,7 +608,7 @@ void m_vs_phi(supermesh &s, unsigned int ndiv, Real N,
 
   for (unsigned int i = 0; i < pivots.size(); i++){
     for (unsigned int j = 0; j < 2; j++){
-      
+
       vector<Real> strains = numtk::range(pivots[i][j](1), pivots[i][j+2](1),ndiv);
       cout << " LOL " << pivots[i][j](1) << "  " <<  pivots[i][j+2](1) << endl;
       for (unsigned int k = 0; k < strains.size(); k++){
@@ -617,10 +617,10 @@ void m_vs_phi(supermesh &s, unsigned int ndiv, Real N,
 //        cout << pivots[i][j](0)<<" "<<  strains[k]<< " "<< inter << endl;
 
         for (unsigned int l=0; l<inter.size(); l++){
-          vector<Real> root = 
+          vector<Real> root =
             root_bisect_force(s,strains[k], pivots[i][j](0), inter[l].s, inter[l].e, N);
           for (unsigned int q=0; q<root.size(); q++){
-            of2 << root[q]*1e6 << "  " << 
+            of2 << root[q]*1e6 << "  " <<
               moment(s,strains[k], pivots[i][j](0),root[q])/1e6 << endl;
           }
 
@@ -629,7 +629,7 @@ void m_vs_phi(supermesh &s, unsigned int ndiv, Real N,
 //        cout << get_slope_range( Point(pivots[i][j](0),strains[k]) ,s ) << endl;
 
         }
-        
+
       }
     }
   }
@@ -650,7 +650,7 @@ void m_vs_phi(supermesh &s, unsigned int ndiv, Real N,
 
 
 
-vector<vector<Real> > interaction(supermesh &s, unsigned int ndiv, 
+vector<vector<Real> > interaction(supermesh &s, unsigned int ndiv,
                                   char *ofilename, bool plotothers)
 {
   vector<vector<Real> > result;
@@ -700,14 +700,14 @@ vector<vector<Real> > interaction(supermesh &s, unsigned int ndiv,
   for (mesh_it = s.meshes.begin(); mesh_it != s.meshes.end(); mesh_it++,i++){
     vector<Point> dum1;
     ex[0] = ex[1] = (*mesh_it->triangles.begin()->cent)(1);
-    for (tri_it = mesh_it->triangles.begin(); 
+    for (tri_it = mesh_it->triangles.begin();
          tri_it!= mesh_it->triangles.end(); tri_it++){
       (*tri_it->cent)(1) < ex[0] ? ex[0]=(*tri_it->cent)(1) : 0;
       (*tri_it->cent)(1) > ex[1] ? ex[1]=(*tri_it->cent)(1) : 0;
     }
     ep[0] = min(mesh_it->mat->epsult[0],mesh_it->mat->epsult[1]) ;
     ep[1] = max(mesh_it->mat->epsult[0],mesh_it->mat->epsult[1]) ;
-    
+
     Point a(ex[0],ep[0]);
     Point b(ex[1],ep[0]);
     Point c(ex[0],ep[1]);
@@ -751,7 +751,7 @@ vector<vector<Real> > interaction(supermesh &s, unsigned int ndiv,
 
     unall.push_back(dum2);
     dum2.clear();
-    
+
   }
 
   // compoundInterval lol;
@@ -762,7 +762,7 @@ vector<vector<Real> > interaction(supermesh &s, unsigned int ndiv,
   for (unsigned int i = 0; i < pivots.size(); i++){
     Real upper,lower;
     pivint.push_back(compoundInterval());
-    
+
     vector<compoundInterval> suballowable;
 
     for (unsigned int j = 0; j < allow.size(); j++){
@@ -781,7 +781,7 @@ vector<vector<Real> > interaction(supermesh &s, unsigned int ndiv,
 //        cout << "e " << suballowable[j].size() << endl<<endl;
       }
     }
-    
+
     if (suballowable.size() != 0){
      compoundInterval lol = suballowable[0];
 //      vector<interval> lol = suballowable[0];
@@ -798,14 +798,14 @@ vector<vector<Real> > interaction(supermesh &s, unsigned int ndiv,
 #if 1
     for (unsigned int j = 0; j < unall.size(); j++){
       for (unsigned int k = 0; k < unall[j].size(); k++){
-        
+
         upper = numtk::slope(pivots[i], unall[j][k][0]);
         lower = numtk::slope(pivots[i], unall[j][k][1]);
-        
+
         if (numtk::isnan(upper) && numtk::isnan(lower)) continue;
         if (numtk::isinf(upper) && numtk::isinf(lower)) continue;
         cout <<i<< ": U " << lower << " " << upper <<endl;
-        
+
         if (numtk::isinf(lower)){
           bool dumb = numtk::isposit(unall[j][k][1](0)-pivots[i](0)) *
             !numtk::isposit(upper);
@@ -826,7 +826,7 @@ vector<vector<Real> > interaction(supermesh &s, unsigned int ndiv,
           pivint[i].subtract_infinity(0,!pivsign[i]);
           continue;
         }
-        
+
         // if (numtk::sign(lower) != numtk::sign(upper)){
         //   bool dumb = numtk::isposit(upper);
         //   subtract_infinity(upper, dumb,pivint[i]);
@@ -843,7 +843,7 @@ vector<vector<Real> > interaction(supermesh &s, unsigned int ndiv,
 
 
 //  cout << allow.size() << " " << unall.size() << endl;
-//   interval dd; 
+//   interval dd;
 //   dd.e = 9.13946e-06; dd.s =-0; pivint[0].push_back(dd);
 //   dd.e = 0.000308364; dd.s =-0; pivint[0].push_back(dd);
 //   dd.e = 0.000271017; dd.s =-0; pivint[0].push_back(dd);
@@ -872,7 +872,7 @@ vector<vector<Real> > interaction(supermesh &s, unsigned int ndiv,
   vector<Real> moments;
   vector<Real> forces;
 
-  ofstream of2; 
+  ofstream of2;
   sprintf(dumchar, "%s_int.txt",ofilename);
   of2.open(dumchar);
   of2 << "# Moment, Force, Curvature" << endl;
@@ -882,17 +882,17 @@ vector<vector<Real> > interaction(supermesh &s, unsigned int ndiv,
     for (unsigned int k=0 ; k<pivint[i].size(); k++){
       vector<Real> slopes = numtk::range(pivint[i][k].s, pivint[i][k].e,ndiv);
 
-      // vector<Real> lulz = 
+      // vector<Real> lulz =
       //   root_bisect_force
       //   (s,pivots[i](1),pivots[i](0),pivint[i][k].s,pivint[i][k].e,0);
       // pivslopes[i].insert(pivslopes[i].begin(),lulz.begin(),lulz.end());
       // cout << lulz.size() << endl;
-      
+
       sprintf(dumchar, "%s_b%d%d0",ofilename,i,k);
       if (plotothers) plot_y_vs_sig(s,pivots[i](1), pivots[i](0), pivint[i][k].s, dumchar);
       sprintf(dumchar, "%s_b%d%d1",ofilename,i,k);
       if (plotothers) plot_y_vs_sig(s,pivots[i](1), pivots[i](0), pivint[i][k].e, dumchar);
-      
+
       sprintf(dumchar, "%s_lol%d%d0.vtk",ofilename,i,k);
       if (plotothers) stress_vtk(s, pivots[i](1), pivots[i](0), pivint[i][k].s,dumchar);
       sprintf(dumchar, "%s_lol%d%d1.vtk",ofilename,i,k);
@@ -923,7 +923,7 @@ vector<vector<Real> > interaction(supermesh &s, unsigned int ndiv,
 #if 0
   ofstream of; of.open("interaction.txt");
   vector<Real> indep = numtk::range(ranst,ranen,ndiv);
-  
+
   for (unsigned int i=0 ; i<pivint.size(); i++){
     for (unsigned int j=0 ; j<pivint[i].size(); j++){
       for (unsigned int k=0 ; k<indep.size(); k++){
@@ -960,7 +960,7 @@ vector<vector<Real> > interaction(supermesh &s, unsigned int ndiv,
   Real indep1 = 0;
   for (unsigned int i=0 ; i<pivint.size(); i++){
     for (unsigned int j=0 ; j<pivint[i].size(); j++){
-      cout << i << "  " << j << endl; 
+      cout << i << "  " << j << endl;
 #ifndef USE_FORCE
       vector<Real> root = root_bisect_moment
         (s, pivots[i](1), pivots[i](0), pivint[i][j].s, pivint[i][j].e, indep1);
@@ -980,13 +980,13 @@ vector<vector<Real> > interaction(supermesh &s, unsigned int ndiv,
         cout << mom1 << " " << indep1 << endl;
         cout << "  AD " << indep1 << " " << for1 <<  " " << mom1 << endl;
 #endif
-        
+
       }
     }
   }
 #endif
 
-  
+
 }
 
 
@@ -1000,7 +1000,7 @@ void plot_y_vs_sig( supermesh &s, Real a, Real b, Real slope, string lolchar ){
   vector<Real> epsv,y,sigv;
   for (mesh_it = s.meshes.begin(); mesh_it != s.meshes.end(); mesh_it++){
 
-    for (tri_it = mesh_it->triangles.begin(); 
+    for (tri_it = mesh_it->triangles.begin();
          tri_it!=mesh_it->triangles.end(); tri_it++){
       y.push_back( (*tri_it->cent)(1) );
       epsv.push_back(  slope* ( y.back() - b) + a );
@@ -1013,7 +1013,7 @@ void plot_y_vs_sig( supermesh &s, Real a, Real b, Real slope, string lolchar ){
   c1=lolchar+".txt";
   numtk::output_gp(y,epsv,sigv,c1);
 
-  
+
   printf(" a = %.2e  b = %.2e  slope = %.2e\n",a,b,slope);
 
 
@@ -1039,7 +1039,7 @@ void lolfun( supermesh &s, Real aa, Real bb, Real slope, char *lolchar ){
 
 
 //  std::cout << s.meshes.front().mat->sig(0.00001) << std::endl;
-  
+
 #if 0
   std::vector<Real> sig, eps;
 
@@ -1061,7 +1061,7 @@ void lolfun( supermesh &s, Real aa, Real bb, Real slope, char *lolchar ){
     vector<Real> epsv;
     vector<Real> sigv;
 //    Real dum2;
-    for (tri_it = mesh_it->triangles.begin(); 
+    for (tri_it = mesh_it->triangles.begin();
          tri_it!=mesh_it->triangles.end(); tri_it++){
 
       epsv.push_back(  slope* ( (*(*tri_it).cent)(1) - bb) +aa);
@@ -1072,7 +1072,7 @@ void lolfun( supermesh &s, Real aa, Real bb, Real slope, char *lolchar ){
 //    cout<< result.back() << endl;
     }
     i=0;
-    for (tri_it = mesh_it->triangles.begin(); 
+    for (tri_it = mesh_it->triangles.begin();
          tri_it!=mesh_it->triangles.end(); tri_it++, i++){
 
 
@@ -1095,7 +1095,7 @@ void lolfun( supermesh &s, Real aa, Real bb, Real slope, char *lolchar ){
 
   add_line(node(-200,bb), node(200,bb),
            s.miscnodes, s.misclines);
-  
+
   set_color(s.misclines,3);
 
   out_vtk1(s.meshes,luli, lolchar);
@@ -1103,14 +1103,14 @@ void lolfun( supermesh &s, Real aa, Real bb, Real slope, char *lolchar ){
 
   // for (mesh_it = s.meshes.begin(); mesh_it != s.meshes.end(); mesh_it++){
   //   for (node_it = mesh_it->nodes.begin(); node_it!=mesh_it->nodes.end(); node_it++){
-      
-      
-  //   }    
-  // }
-  
 
-  
-//   for (vector<vector<Real> >::iterator vec_it = luli.begin(); 
+
+  //   }
+  // }
+
+
+
+//   for (vector<vector<Real> >::iterator vec_it = luli.begin();
 //        vec_it != luli.end(); vec_it++){
 //     for (vector<Real>::iterator it = vec_it->begin();
 //          it != vec_it->end(); it++){
@@ -1134,7 +1134,7 @@ std::vector<Real> lol2(mesh &m, Real a, Real b){
   }
 
   //Get the vertical bounding limits of the meshes
-  
+
   node *n[2];
 //  nodes.push_back
 
@@ -1175,7 +1175,7 @@ std::vector<Real> lol2(mesh &m, Real a, Real b){
 // //  Real center[] = {80,80}; circular_section(m2,8,center,12);
 
 
-  
+
 
 //   for (mesh_it = rein.begin(); mesh_it != rein.end(); mesh_it++){
 //     s.meshes.front().subtract(*mesh_it);
@@ -1213,7 +1213,7 @@ std::vector<Real> lol2(mesh &m, Real a, Real b){
 // {
 //   if (v.size()==0) return;
 //   sort(v.begin(), v.end(), interval_sorter);
-  
+
 //   vector<interval> r;
 //   r.push_back(v[0]);
 //   for (unsigned int i = 0; i < v.size(); i++){
@@ -1249,7 +1249,7 @@ std::vector<Real> lol2(mesh &m, Real a, Real b){
 //   // for (unsigned int j = 0; j < v.size(); j++)
 //   //   cout << "(" << v[j].s << "," <<  v[j].e << "), ";
 //   // cout << endl<<endl;
-  
+
 // }
 
 
@@ -1262,7 +1262,7 @@ std::vector<Real> lol2(mesh &m, Real a, Real b){
 
 //   sort(v.begin(), v.end(), interval_sorter);
 
-  
+
 //   vector<interval> r;
 //   for (unsigned int i = 0; i < v.size(); i++){
 //     if (c.e <= v[i].s){
@@ -1344,7 +1344,7 @@ std::vector<Real> lol2(mesh &m, Real a, Real b){
 //   interval d;
 
 //   // side == 1 for positive, == 0 for negative
-  
+
 //   vector<interval> r;
 //   if (side == true){
 //     for (unsigned int i = 0; i < v.size(); i++){
