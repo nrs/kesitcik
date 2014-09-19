@@ -1,7 +1,7 @@
 kesitcik
 ==========
-library for the numerical analysis of arbitrary composite beam cross sections
-governed by the Euler-Bernoulli beam theory equations
+library for numerical analysis of arbitrary composite beam cross sections
+governed by Euler-Bernoulli beam theory equations
 
 Installation
 ---------------
